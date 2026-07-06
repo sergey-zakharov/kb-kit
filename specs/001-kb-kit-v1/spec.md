@@ -135,6 +135,7 @@ Periodically the user runs a deep-scan command. Unlike hygiene (mechanical, stru
 - The INBOX contains an item too vague to classify: it stays in the queue with a recorded question to the user, rather than being force-filed.
 - Migration encounters an existing file that is itself an index of another area (nested index): adopted as-is; nesting is respected, not flattened.
 - Fact-level anchoring inside adopted (pre-existing) files: inserting an anchor mark edits a file kb-kit does not own — allowed only with confirmation; otherwise the citation falls back to link + verbatim quote, which needs no file edit.
+- Non-markdown artifacts in a corpus (audio recordings, spreadsheets, JSON exports, scripts): they are not nodes and stay out of the graph, but nodes may cite them via plain relative links; hygiene validates that such referenced files exist.
 
 ## Requirements *(mandatory)*
 
@@ -194,5 +195,5 @@ Periodically the user runs a deep-scan command. Unlike hygiene (mechanical, stru
 - Conflict resolution defaults to surfacing and asking (Constitution Principle III); version history is provided by git, not by node-level versioning.
 - Packs in v1 = the install mechanism plus one built-in example pack; pack authoring guides and a registry are out of scope.
 - Embeddings, semantic search, passive capture of conversations, and any UI beyond the generated HTML file are explicitly out of scope for v1.
-- The two reference corpora (corpus A — research docs; corpus B — a 174-card sales CRM) are available locally for validation and represent the target user's real-world shape and mess.
+- Three reference corpora are available locally for validation, each stressing a different capability: corpus A — curated research docs (migration adopts good conventions), corpus B — a 174-card sales CRM (index drift at scale — hygiene), corpus C — a ~240-file client-project intake (raw INBOX mess — filing/classification, plus call transcripts with client quotes — evidence citations, plus an ADR-light decision log already using superseded/active statuses — consistency marks in the wild).
 - Multimodal raw input (screenshots of text) is handled as its extracted text; image storage in the base is out of scope for v1.

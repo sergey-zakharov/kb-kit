@@ -60,8 +60,8 @@ the files — never a source of truth.
   generation, scaffolding) belongs to zero-dependency scripts.
 - **Agent-neutral core**: the graph (nodes, indexes, links) contains nothing
   agent-specific; agent adapters (skills, `CLAUDE.md`) are thin and replaceable.
-- **Pack as a first-class unit**: a packaged theme = node templates + theme rules +
-  check invariants + skill extensions, installable as one unit.
+- **Mask (kit-mask) as a first-class unit**: a packaged identity = node templates + theme rules +
+  check invariants + skill extensions, installable as one unit. The engine is faceless; masks are what a base wears — several can coexist on one graph.
 - **Migration respects the corpus**: `kb-init` over an existing corpus MUST NOT
   move or rename files; it formalizes the corpus's own conventions into theme
   rules, applying kb-kit defaults only where nothing exists.
@@ -90,4 +90,4 @@ materially expanded; PATCH = clarification). The plan-phase Constitution Check M
 gate designs against Principles I–V; a violation requires explicit justification in
 the plan's Complexity Tracking section or a redesign.
 
-**Version**: 1.0.0 | **Ratified**: 2026-07-06 | **Last Amended**: 2026-07-06
+**Version**: 1.0.1 | **Ratified**: 2026-07-06 | **Last Amended**: 2026-07-06

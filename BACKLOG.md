@@ -22,11 +22,11 @@ or alongside feature 002.
 
 ## Also queued
 
-- **Feature 002: product-development pack** (flagship vertical: CX/customer
+- **Feature 002: product-development mask** (flagship kit-mask: CX/customer
   journey, PM best practices for new and existing products) — decided, next
   spec after v0.1 launch.
 - ~~Memory bridge~~ — SHIPPED in v0.1.0 полностью: EXTERNAL_BASE_* resolution, explicit [[name:slug]], external-base-unreachable soft finding, read-only follow in kb-ask, viz exclusion.
 - ~~fileref #anchor strip~~ — SHIPPED in v0.1.0.
 - ~~Inline code spans~~ — SHIPPED in v0.1.0 (excluded from link/fileref parsing).
-- Registry / community packs; Codex adapter (AGENTS.md); embeddings as derived
+- kit-masks registry / community masks; Codex adapter (AGENTS.md); embeddings as derived
   cache — per roadmap.

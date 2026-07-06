@@ -49,7 +49,7 @@ coverage, artifact counts, naming patterns. It changes nothing else.
 ## Report shape
 
 ```
-Installed: .kb/ (scripts, templates, packs), .claude/skills/kb-*
+Installed: .kb/ (scripts, templates, masks), .claude/skills/kb-*
 Base: <KB_DIR> (scaffolded | adopted corpus, N themes)
 Added files: <list>
 Moved/renamed/rewritten: 0

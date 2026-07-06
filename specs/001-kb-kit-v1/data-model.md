@@ -98,19 +98,19 @@ Row = `- [name](file.md) — hook`. One row per node. Reserved files (INDEX, CLA
 
 **State transitions**: pending → filed (via /kb-add) | blocked (question recorded) → filed. Items are never deleted, only marked.
 
-## Pack
+## Mask (kit-mask)
 
 Directory layout (research R4):
 
 ```text
-<pack-name>/
-├── pack.conf        # NAME=, DESCRIPTION=, THEME_SLUG=, VERSION=
-├── rules.md         # theme rules delivered by the pack
+<mask-name>/
+├── mask.conf        # NAME=, DESCRIPTION=, THEME_SLUG=, VERSION=
+├── rules.md         # theme rules delivered by the mask
 ├── templates/       # node templates, e.g. source-card.md
 └── checks.conf      # optional invariants: REQUIRED_FRONTMATTER_<type>=key,key ...
 ```
 
-Install materializes a theme from THEME_SLUG + rules + templates and registers checks with hygiene.
+Install ("putting on the mask") materializes a theme from THEME_SLUG + rules + templates and registers checks with hygiene.
 
 ## Consistency marks (audit outcomes)
 

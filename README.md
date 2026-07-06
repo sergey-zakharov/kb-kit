@@ -80,11 +80,22 @@ never overwritten.
 
 v1 in active development, spec-driven (see `specs/`). First adopter: a real production corpus — months of product research and a 170+ card sales CRM that ran on this exact pattern, maintained by hand. kb-kit is that hand discipline, packaged.
 
+## Masks
+
+The engine is deliberately faceless: nodes, indexes, links, discipline. What a
+base *is* — a CRM, a product-discovery vault, a research library — is a **mask**
+it wears: a **kit-mask** — node templates, theme rules, and hygiene invariants
+installed in one command (`kb-init --mask <name>`). Masks coexist on one base (your product knowledge and
+your sales pipeline share the same graph and link to each other), and a base
+can put on a new mask at any moment — no migration, no export, the same files.
+
 ## Roadmap
 
-- **Packs** — vertical disciplines installed as modules on top of the engine. Flagship: **product development** (CX and customer-journey work, product-management best practices for new and existing products). Also: sales CRM, content pipeline, fundraising
+- **kit-masks** — flagship: **product development** (customer-journey work,
+  research insights with evidence, hypothesis and decision discipline — for new
+  and existing products). Also: sales CRM, content pipeline, fundraising
 - **Adapters** — agent-neutral core; Codex (`AGENTS.md`) adapter next
-- **Registry** — discover and install community packs
+- **Registry** — discover and install community kit-masks
 - **Embeddings** — optional derived cache for when a base outgrows grep (files stay the source of truth)
 
 ## Credits

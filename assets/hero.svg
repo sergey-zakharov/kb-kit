@@ -54,8 +54,9 @@
         <circle cx="1188" cy="176" r="12" fill="#e8a04c"/>
       </g>
       <text x="1222" y="212" font-size="112" font-weight="800" fill="#e8eaf0" letter-spacing="-3">kit</text>
-      <text x="954" y="272" font-size="27" fill="#aab0c0">A knowledge base your AI agent can actually maintain.</text>
-      <text x="954" y="322" font-size="20" fill="#5a6072" font-family="ui-monospace, 'SF Mono', Consolas, monospace">just markdown · just git · masks included</text>
+      <text x="954" y="266" font-size="27" fill="#aab0c0">A knowledge base your AI agent</text>
+      <text x="954" y="302" font-size="27" fill="#aab0c0">can actually maintain.</text>
+      <text x="954" y="356" font-size="20" fill="#5a6072" font-family="ui-monospace, 'SF Mono', Consolas, monospace">just markdown · just git · masks included</text>
     </g>
   </g>
 </svg>

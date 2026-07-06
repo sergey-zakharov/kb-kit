@@ -62,9 +62,9 @@
 
 ## Phase 7: User Story 5 — Visualize (P5)
 
-- [ ] T021 [US5] Author `core/scripts/viz-template.html`: self-contained vanilla-JS canvas force-graph (~250 LOC) — pan/zoom, hover details (name/description/theme), click-highlight neighbors, text search, theme colors, visual style for flagged nodes; `/*__KB_GRAPH_DATA__*/` placeholder
-- [ ] T022 [US5] Implement `core/scripts/kb-viz.sh`: kb-graph.sh → inject JSON → single `kb-graph.html`
-- [ ] T023 [US5] Test `tests/test_kb_viz.sh`: output is one file, zero `http` references (offline guarantee), embedded node/edge counts match graph JSON (SC-007)
+- [X] T021 [US5] Author `core/scripts/viz-template.html`: self-contained vanilla-JS canvas force-graph (~250 LOC) — pan/zoom, hover details (name/description/theme), click-highlight neighbors, text search, theme colors, visual style for flagged nodes; `/*__KB_GRAPH_DATA__*/` placeholder
+- [X] T022 [US5] Implement `core/scripts/kb-viz.sh`: kb-graph.sh → inject JSON → single `kb-graph.html`
+- [X] T023 [US5] Test `tests/test_kb_viz.sh`: output is one file, zero `http` references (offline guarantee), embedded node/edge counts match graph JSON (SC-007)
 
 ## Phase 8: User Story 6 — Packs (P6)
 

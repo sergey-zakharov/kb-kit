@@ -57,12 +57,12 @@ grep -q "^KB_KIT_VERSION=v" "$TMP/.kb/config" && ok "version stamped from git de
 ( cd "$TMP" && "$ROOT/kb-init.sh" --update --json | grep -q '"status":"ok"' ) && ok "--json output" || fail "--json broken"
 
 # 6. --pack: install built-in pack, then collision on re-install
-( cd "$TMP" && "$ROOT/kb-init.sh" --pack sources >/dev/null 2>&1 )
-[ -f "$TMP/kb/sources/INDEX.md" ] && ok "pack theme INDEX.md created" || fail "pack theme missing"
+( cd "$TMP" && "$ROOT/kb-init.sh" --mask sources >/dev/null 2>&1 )
+[ -f "$TMP/kb/sources/INDEX.md" ] && ok "mask theme INDEX.md created" || fail "pack theme missing"
 [ -f "$TMP/kb/sources/CLAUDE.md" ] && grep -q "one source material" "$TMP/kb/sources/CLAUDE.md" \
-  && ok "pack rules wrapped into theme CLAUDE.md" || fail "pack rules missing from CLAUDE.md"
-grep -q "](sources/INDEX.md)" "$TMP/kb/KB.md" && ok "KB.md gained pack theme row" || fail "KB.md row missing"
-[ -f "$TMP/.kb/packs/sources/templates/source-card.md" ] && ok "pack templates staged" || fail "pack templates missing"
+  && ok "mask rules wrapped into theme CLAUDE.md" || fail "pack rules missing from CLAUDE.md"
+grep -q "](sources/INDEX.md)" "$TMP/kb/KB.md" && ok "KB.md gained mask theme row" || fail "KB.md row missing"
+[ -f "$TMP/.kb/masks/sources/templates/source-card.md" ] && ok "mask templates staged (--pack alias works on re-install)" || fail "pack templates missing"
 if ( cd "$TMP" && "$ROOT/kb-init.sh" --pack sources >/dev/null 2>&1 ); then
   fail "re-install did not report collision"
 else

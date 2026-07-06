@@ -9,7 +9,7 @@
 #   kb-init.sh --update                  refresh .kb/ and .claude/skills/ (never touches knowledge)
 #   kb-init.sh --hooks                   wire automation: git pre-commit + Claude Code hooks + CI template
 #   kb-init.sh --uninstall               remove toolkit (.kb/, .claude/skills/kb-*); knowledge untouched
-#   kb-init.sh --pack <name|path>        install a pack (Phase 8)
+#   kb-init.sh --mask <name|path>        put on a mask (--pack kept as alias)
 #   kb-init.sh --json                    machine-readable result
 # Exit: 0 ok, 1 findings/conflict, 2 usage/environment error.
 set -euo pipefail
@@ -30,7 +30,7 @@ while [ $# -gt 0 ]; do
     --update)          MODE="update"; shift ;;
     --hooks)           MODE="hooks"; shift ;;
     --uninstall)       MODE="uninstall"; shift ;;
-    --pack)            MODE="pack"; ARG="${2:?}"; shift 2 ;;
+    --mask|--pack)     MODE="mask"; ARG="${2:?}"; shift 2 ;;
     --json)            JSON=1; shift ;;
     *) echo "kb-init: unknown option $1" >&2; exit 2 ;;
   esac
@@ -39,10 +39,10 @@ done
 say() { [ "$JSON" = 1 ] || echo "$@"; }
 
 copy_toolkit() {
-  mkdir -p "$TARGET/.kb/scripts" "$TARGET/.kb/templates" "$TARGET/.kb/packs" "$TARGET/.kb/hooks" "$TARGET/.claude/skills"
+  mkdir -p "$TARGET/.kb/scripts" "$TARGET/.kb/templates" "$TARGET/.kb/masks" "$TARGET/.kb/hooks" "$TARGET/.claude/skills"
   cp -f "$SRC_DIR"/core/scripts/* "$TARGET/.kb/scripts/"
   cp -rf "$SRC_DIR"/core/templates/. "$TARGET/.kb/templates/"
-  [ -d "$SRC_DIR/core/packs" ] && cp -rf "$SRC_DIR"/core/packs/. "$TARGET/.kb/packs/" 2>/dev/null || true
+  [ -d "$SRC_DIR/core/masks" ] && cp -rf "$SRC_DIR"/core/masks/. "$TARGET/.kb/masks/" 2>/dev/null || true
   cp -rf "$SRC_DIR"/adapters/claude/skills/. "$TARGET/.claude/skills/"
   chmod +x "$TARGET"/.kb/scripts/*.sh 2>/dev/null || true
 }
@@ -205,27 +205,27 @@ uninstall)
   if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"uninstall","kb_dir":"%s"}\n' "$KB_DIR"; fi
   ;;
 
-pack)
-  # resolve pack dir: explicit path > kb-kit built-ins > already-installed .kb/packs
+mask)
+  # resolve pack dir: explicit path > kb-kit built-ins > already-installed .kb/masks
   if   [ -d "$ARG" ]; then PDIR="$ARG"
-  elif [ -d "$SRC_DIR/core/packs/$ARG" ]; then PDIR="$SRC_DIR/core/packs/$ARG"
-  elif [ -d "$TARGET/.kb/packs/$ARG" ]; then PDIR="$TARGET/.kb/packs/$ARG"
-  else echo "kb-init: pack not found: $ARG" >&2; exit 2; fi
-  [ -f "$PDIR/pack.conf" ] || { echo "kb-init: not a pack (pack.conf missing): $PDIR" >&2; exit 2; }
+  elif [ -d "$SRC_DIR/core/masks/$ARG" ]; then PDIR="$SRC_DIR/core/masks/$ARG"
+  elif [ -d "$TARGET/.kb/masks/$ARG" ]; then PDIR="$TARGET/.kb/masks/$ARG"
+  else echo "kb-init: mask not found: $ARG" >&2; exit 2; fi
+  [ -f "$PDIR/mask.conf" ] || { echo "kb-init: not a mask (mask.conf missing): $PDIR" >&2; exit 2; }
   [ -f "$TARGET/.kb/config" ] || { echo "kb-init: install kb-kit first (no .kb/config)" >&2; exit 2; }
   KB_DIR="$(awk -F= '$1=="KB_DIR"{print $2}' "$TARGET/.kb/config")"
-  PNAME="$(awk -F= '$1=="NAME"{print $2}' "$PDIR/pack.conf")"
-  PDESC="$(awk -F= '$1=="DESCRIPTION"{print $2}' "$PDIR/pack.conf")"
-  SLUG="$(awk -F= '$1=="THEME_SLUG"{print $2}' "$PDIR/pack.conf")"
-  [ -n "$SLUG" ] || { echo "kb-init: pack.conf has no THEME_SLUG" >&2; exit 2; }
+  PNAME="$(awk -F= '$1=="NAME"{print $2}' "$PDIR/mask.conf")"
+  PDESC="$(awk -F= '$1=="DESCRIPTION"{print $2}' "$PDIR/mask.conf")"
+  SLUG="$(awk -F= '$1=="THEME_SLUG"{print $2}' "$PDIR/mask.conf")"
+  [ -n "$SLUG" ] || { echo "kb-init: mask.conf has no THEME_SLUG" >&2; exit 2; }
   THEME="$TARGET/$KB_DIR/$SLUG"
   if [ -d "$THEME" ]; then
     echo "kb-init: CONFLICT — theme '$SLUG' already exists at $KB_DIR/$SLUG/." >&2
     echo "kb-init: nothing was changed. Options: rename the pack theme, merge manually, or abort." >&2
     exit 1
   fi
-  mkdir -p "$THEME" "$TARGET/.kb/packs/$PNAME"
-  cp -rf "$PDIR/." "$TARGET/.kb/packs/$PNAME/"
+  mkdir -p "$THEME" "$TARGET/.kb/masks/$PNAME"
+  cp -rf "$PDIR/." "$TARGET/.kb/masks/$PNAME/"
   printf '# %s — index\n\n' "$SLUG" > "$THEME/INDEX.md"
   awk -v rules="$PDIR/rules.md" -v slug="$SLUG" '
     /\{\{rules\}\}/ { while ((getline l < rules) > 0) print l; next }
@@ -237,7 +237,7 @@ pack)
       { print } /^## Themes$/ { getline nl; print nl; print row }
     ' "$TARGET/$KB_DIR/KB.md" > "$TARGET/$KB_DIR/KB.md.tmp" && mv "$TARGET/$KB_DIR/KB.md.tmp" "$TARGET/$KB_DIR/KB.md"
   fi
-  say "kb-init: pack '$PNAME' installed — theme $KB_DIR/$SLUG/ (INDEX.md, CLAUDE.md), templates in .kb/packs/$PNAME/templates/"
-  if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"pack","pack":"%s","theme":"%s/%s"}\n' "$PNAME" "$KB_DIR" "$SLUG"; fi
+  say "kb-init: mask '$PNAME' is on — theme $KB_DIR/$SLUG/ (INDEX.md, CLAUDE.md), templates in .kb/masks/$PNAME/templates/"
+  if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"mask","pack":"%s","theme":"%s/%s"}\n' "$PNAME" "$KB_DIR" "$SLUG"; fi
   ;;
 esac

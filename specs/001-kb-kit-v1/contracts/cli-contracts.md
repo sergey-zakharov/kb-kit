@@ -8,7 +8,7 @@ All scripts: bash ≥ 4, zero external dependencies, read-only over knowledge co
 kb-init.sh [--dir <path>]            # scaffold new base (default: kb/)
            --migrate <corpus-dir>    # phase A: inventory existing corpus → MIGRATION_REPORT.md
            --apply-migration <report># phase B apply (invoked by /kb-init skill after confirmation)
-           --pack <name|path>        # install a pack into the base
+           --mask <name|path>        # put on a mask (kit-mask); --pack = legacy alias
            --update                  # refresh .kb/scripts+templates and .claude/skills only (preserves custom config lines)
            --hooks                   # wire automation: git pre-commit (warn-only; KB_PRECOMMIT_STRICT=1 blocks),
                                      # Claude Code hooks (SessionStart status, PostToolUse hygiene on Write/Edit),
@@ -18,7 +18,7 @@ kb-init.sh [--dir <path>]            # scaffold new base (default: kb/)
            --json
 ```
 
-Guarantees: idempotent re-run; `--migrate` writes only the report; `--apply-migration` adds rules/index files, never moves/renames/rewrites content; collision on pack theme slug → exit 1 with finding, no changes.
+Guarantees: idempotent re-run; `--migrate` writes only the report; `--apply-migration` adds rules/index files, never moves/renames/rewrites content; collision on mask theme slug → exit 1 with finding, no changes.
 
 ## kb-graph.sh
 

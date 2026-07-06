@@ -2,6 +2,13 @@
 
 All notable changes to kb-kit. Public from the first commit — that's the point.
 
+## v0.1.2 — 2026-07-06
+
+- **Packs are now masks (kit-masks)** — terminology follows the philosophy: the
+  engine is faceless, a mask is what a base wears. `kb-init --mask` (with
+  `--pack` kept as a legacy alias), `core/masks/`, `mask.conf`, `.kb/masks/`.
+  Constitution v1.0.1. Feature 002 (product-development mask) spec drafted.
+
 ## v0.1.1 — 2026-07-06
 
 - **`kb-init --hooks`** — the base watches itself, still zero-infra: git

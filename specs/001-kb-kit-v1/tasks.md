@@ -32,9 +32,9 @@
 
 ## Phase 3: User Story 1 — File a fact with one command (P1) 🎯 MVP
 
-- [ ] T009 [US1] Author `adapters/claude/skills/kb-add/SKILL.md` per skill-contracts.md: staged classification (KB.md → theme index → rules), ask-don't-guess on ambiguity, FR-006 conflict policy (complement=apply, contradiction=quote both & wait), multi-fact split with veto, evidence-citation authoring (link+quote+locator), INBOX queue processing with status updates, `--from-session` mode with confirmation list (FR-016), same-operation index update, full touched-files report. **ITERATIVE — product core: draft → fixture run → revise, expect multiple passes**
-- [ ] T010 [P] [US1] Second-opinion hook: protocol doc + example script `core/templates/hooks/second-opinion.example` (stdin JSON → stdout opinion, per cli-contracts.md); invocation + absent-silent behavior wired into kb-add SKILL.md
-- [ ] T011 [US1] Validation run on a copy of mini-kb: 5 varied raw inputs (clear fact, two-theme ambiguity, contradiction, multi-fact transcript, INBOX batch) → record vs acceptance scenarios in `specs/001-kb-kit-v1/validation/us1.md`; then `kb-check.sh` must report clean (SC-001, SC-005 rehearsal)
+- [X] T009 [US1] Author `adapters/claude/skills/kb-add/SKILL.md` per skill-contracts.md: staged classification (KB.md → theme index → rules), ask-don't-guess on ambiguity, FR-006 conflict policy (complement=apply, contradiction=quote both & wait), multi-fact split with veto, evidence-citation authoring (link+quote+locator), INBOX queue processing with status updates, `--from-session` mode with confirmation list (FR-016), same-operation index update, full touched-files report. **ITERATIVE — product core: draft → fixture run → revise, expect multiple passes**
+- [X] T010 [P] [US1] Second-opinion hook: protocol doc + example script `core/templates/hooks/second-opinion.example` (stdin JSON → stdout opinion, per cli-contracts.md); invocation + absent-silent behavior wired into kb-add SKILL.md
+- [X] T011 [US1] Validation run on a copy of mini-kb: 5 varied raw inputs (clear fact, two-theme ambiguity, contradiction, multi-fact transcript, INBOX batch) → record vs acceptance scenarios in `specs/001-kb-kit-v1/validation/us1.md`; then `kb-check.sh` must report clean (SC-001, SC-005 rehearsal)
 
 **Checkpoint**: filing works — the base can grow with discipline
 

@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="420" viewBox="0 0 1600 420" role="img" aria-label="kb-kit — a knowledge graph wearing a mask">
+  <defs>
+    <clipPath id="r"><rect width="1600" height="420" rx="24"/></clipPath>
+  </defs>
+  <g clip-path="url(#r)">
+    <rect width="1600" height="420" fill="#14161c"/>
+    <!-- faint background grid dots -->
+    <g fill="#232733">
+      <circle cx="120" cy="70" r="3"/><circle cx="300" cy="40" r="3"/><circle cx="520" cy="55" r="3"/>
+      <circle cx="80" cy="360" r="3"/><circle cx="260" cy="390" r="3"/><circle cx="700" cy="385" r="3"/>
+      <circle cx="920" cy="60" r="3"/><circle cx="960" cy="370" r="3"/><circle cx="1540" cy="380" r="3"/>
+    </g>
+    <!-- graph edges -->
+    <g stroke="#3c4356" stroke-width="2.5" fill="none">
+      <path d="M170,260 L330,150"/>
+      <path d="M170,260 L350,320"/>
+      <path d="M330,150 L560,185"/>
+      <path d="M350,320 L560,245"/>
+      <path d="M350,320 L590,345"/>
+      <path d="M330,150 L520,90"/>
+      <path d="M520,90 L742,168"/>
+      <path d="M560,185 L595,183"/>
+      <path d="M560,245 L620,228"/>
+      <path d="M590,345 L742,248"/>
+      <path d="M880,190 L942,140"/>
+      <path d="M880,222 L950,290"/>
+    </g>
+    <!-- graph nodes (files) -->
+    <g>
+      <circle cx="170" cy="260" r="16" fill="#4cbfbf"/>
+      <circle cx="330" cy="150" r="20" fill="#70ad47"/>
+      <circle cx="350" cy="320" r="14" fill="#c65b8a"/>
+      <circle cx="520" cy="90"  r="12" fill="#8f7ee6"/>
+      <circle cx="590" cy="345" r="12" fill="#d5715b"/>
+      <circle cx="942" cy="140" r="11" fill="#a0a84c"/>
+      <circle cx="950" cy="290" r="13" fill="#5b9bd5"/>
+    </g>
+    <!-- the mask, worn by the graph: two nodes are its eyes -->
+    <path fill="#e8a04c" fill-rule="evenodd" d="
+      M560,196
+      C588,130 668,118 718,152
+      C736,164 760,164 778,152
+      C828,118 908,130 936,196
+      C950,232 932,272 886,284
+      C842,295 792,278 748,246
+      C704,278 654,295 610,284
+      C564,272 546,232 560,196
+      Z
+      M632,206 a44,30 0 1,0 88,0 a44,30 0 1,0 -88,0
+      M776,206 a44,30 0 1,0 88,0 a44,30 0 1,0 -88,0"/>
+    <!-- eyes = graph nodes seen through the mask -->
+    <circle cx="676" cy="206" r="17" fill="#5b9bd5"/>
+    <circle cx="820" cy="206" r="17" fill="#70ad47"/>
+    <!-- eye nodes connect back into the graph -->
+    <g stroke="#3c4356" stroke-width="2.5" fill="none">
+      <path d="M676,206 L620,228"/>
+      <path d="M820,206 L880,190"/>
+      <path d="M820,206 L880,222"/>
+      <path d="M676,206 L595,183"/>
+    </g>
+    <!-- wordmark -->
+    <g font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+      <text x="1080" y="185" font-size="92" font-weight="800" fill="#e8eaf0" letter-spacing="-2">kb-kit</text>
+      <text x="1084" y="238" font-size="27" fill="#aab0c0">A knowledge base your AI agent</text>
+      <text x="1084" y="274" font-size="27" fill="#aab0c0">can actually maintain.</text>
+      <text x="1084" y="330" font-size="20" fill="#5a6072" font-family="ui-monospace, 'SF Mono', Consolas, monospace">just markdown · just git · masks included</text>
+    </g>
+  </g>
+</svg>

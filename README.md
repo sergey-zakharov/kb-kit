@@ -47,6 +47,26 @@ cd ~/your-project && ~/tools/kb-kit/kb-init.sh --migrate docs
 Requirements: git, bash, and Claude Code. Nothing else — no runtime
 dependencies, no daemons, no build step.
 
+## Automation (optional)
+
+The base can watch itself — still zero infrastructure, just native hooks:
+
+```bash
+~/tools/kb-kit/kb-init.sh --hooks
+```
+
+- **git pre-commit** — hygiene check when a commit touches the base
+  (warn-only; `KB_PRECOMMIT_STRICT=1` to block);
+- **Claude Code hooks** — every new session opens with a one-line base status
+  (findings + INBOX queue), and any node the agent edits is hygiene-checked
+  immediately, with findings fed straight back to the agent;
+- **CI template** — a ready GitHub Action staged at `.kb/hooks/kb-check.yml`
+  (copy to `.github/workflows/` to activate).
+
+Filing stays curated — nothing is captured automatically; the hooks only watch
+hygiene and remind. Existing pre-commit hooks and `.claude/settings.json` are
+never overwritten.
+
 ## Principles
 
 1. **One node, one fact.**

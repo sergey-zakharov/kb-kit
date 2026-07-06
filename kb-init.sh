@@ -7,6 +7,7 @@
 #   kb-init.sh --migrate <corpus-dir>    install toolkit + write MIGRATION_REPORT.md (report only)
 #   kb-init.sh --apply-migration <rpt>   create KB.md skeleton from a reviewed report (adds files only)
 #   kb-init.sh --update                  refresh .kb/ and .claude/skills/ (never touches knowledge)
+#   kb-init.sh --hooks                   wire automation: git pre-commit + Claude Code hooks + CI template
 #   kb-init.sh --uninstall               remove toolkit (.kb/, .claude/skills/kb-*); knowledge untouched
 #   kb-init.sh --pack <name|path>        install a pack (Phase 8)
 #   kb-init.sh --json                    machine-readable result
@@ -27,6 +28,7 @@ while [ $# -gt 0 ]; do
     --migrate)         MODE="migrate"; ARG="${2:?}"; shift 2 ;;
     --apply-migration) MODE="apply"; ARG="${2:?}"; shift 2 ;;
     --update)          MODE="update"; shift ;;
+    --hooks)           MODE="hooks"; shift ;;
     --uninstall)       MODE="uninstall"; shift ;;
     --pack)            MODE="pack"; ARG="${2:?}"; shift 2 ;;
     --json)            JSON=1; shift ;;
@@ -156,6 +158,41 @@ apply)
     say "kb-init: INBOX.md created at $KB_DIR/INBOX.md"
   fi
   if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"apply","kb_dir":"%s"}\n' "$KB_DIR"; fi
+  ;;
+
+hooks)
+  [ -f "$TARGET/.kb/config" ] || { echo "kb-init: install kb-kit first (no .kb/config)" >&2; exit 2; }
+  mkdir -p "$TARGET/.kb/hooks"
+  for h in session-start.sh posttool-check.sh pre-commit.kb.sh; do
+    cp -f "$SRC_DIR/core/templates/hooks/$h" "$TARGET/.kb/hooks/$h"
+    chmod +x "$TARGET/.kb/hooks/$h"
+  done
+  cp -f "$SRC_DIR/core/templates/hooks/kb-check.yml" "$TARGET/.kb/hooks/kb-check.yml"
+  # 1. git pre-commit: install only if the slot is free; never clobber an existing hook
+  if git -C "$TARGET" rev-parse --git-dir >/dev/null 2>&1; then
+    GITDIR="$(git -C "$TARGET" rev-parse --git-dir)"
+    case "$GITDIR" in /*) : ;; *) GITDIR="$TARGET/$GITDIR" ;; esac
+    if [ ! -e "$GITDIR/hooks/pre-commit" ]; then
+      mkdir -p "$GITDIR/hooks"
+      cp -f "$TARGET/.kb/hooks/pre-commit.kb.sh" "$GITDIR/hooks/pre-commit"
+      chmod +x "$GITDIR/hooks/pre-commit"
+      say "kb-init: git pre-commit hook installed (warn-only; KB_PRECOMMIT_STRICT=1 to block)"
+    else
+      say "kb-init: existing pre-commit hook found — NOT touched. Chain it manually: bash .kb/hooks/pre-commit.kb.sh"
+    fi
+  fi
+  # 2. Claude Code hooks: write settings only if absent; never merge blindly
+  if [ ! -f "$TARGET/.claude/settings.json" ]; then
+    mkdir -p "$TARGET/.claude"
+    cp -f "$SRC_DIR/core/templates/hooks/claude-settings.json" "$TARGET/.claude/settings.json"
+    say "kb-init: .claude/settings.json created (SessionStart status + PostToolUse hygiene)"
+  else
+    cp -f "$SRC_DIR/core/templates/hooks/claude-settings.json" "$TARGET/.kb/hooks/claude-settings-snippet.json"
+    say "kb-init: .claude/settings.json exists — NOT touched. Merge the snippet yourself: .kb/hooks/claude-settings-snippet.json"
+  fi
+  # 3. CI: template staged, not auto-activated (pushing CI is the user's call)
+  say "kb-init: CI template staged at .kb/hooks/kb-check.yml — copy to .github/workflows/ to activate"
+  if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"hooks"}\n'; fi
   ;;
 
 uninstall)

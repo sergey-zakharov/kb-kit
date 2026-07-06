@@ -69,6 +69,21 @@ else
   RC=$?; [ "$RC" -eq 1 ] && ok "collision surfaced (exit 1), nothing overwritten" || fail "collision wrong exit code: $RC"
 fi
 
+# 6b. --hooks wires automation without clobbering
+( cd "$TMP" && "$ROOT/kb-init.sh" --hooks >/dev/null )
+[ -x "$TMP/.kb/hooks/session-start.sh" ] && [ -x "$TMP/.kb/hooks/posttool-check.sh" ] && ok "hook scripts staged+executable" || fail "hook scripts missing"
+[ -x "$TMP/.git/hooks/pre-commit" ] && ok "git pre-commit installed (slot was free)" || fail "pre-commit not installed"
+[ -f "$TMP/.claude/settings.json" ] && grep -q "session-start.sh" "$TMP/.claude/settings.json" && ok "claude settings created" || fail "claude settings missing"
+[ -f "$TMP/.kb/hooks/kb-check.yml" ] && ok "CI template staged (not auto-activated)" || fail "CI template missing"
+[ ! -f "$TMP/.github/workflows/kb-check.yml" ] && ok "CI not auto-pushed into .github/" || fail "CI auto-activated"
+# clobber protection: pre-existing hook and settings survive a re-run
+echo "#!/bin/sh" > "$TMP/.git/hooks/pre-commit.bak" && mv "$TMP/.git/hooks/pre-commit" "$TMP/.git/hooks/pre-commit.orig" && printf '#!/bin/sh\necho custom\n' > "$TMP/.git/hooks/pre-commit"
+( cd "$TMP" && "$ROOT/kb-init.sh" --hooks >/dev/null )
+grep -q "echo custom" "$TMP/.git/hooks/pre-commit" && ok "existing pre-commit not clobbered" || fail "pre-commit clobbered"
+[ -f "$TMP/.kb/hooks/claude-settings-snippet.json" ] && ok "settings snippet staged when settings exist" || fail "snippet missing"
+# hook behavior: clean base → pre-commit passes
+( cd "$TMP" && git add -A >/dev/null 2>&1; bash .kb/hooks/pre-commit.kb.sh ) && ok "pre-commit exits 0 on clean base" || fail "pre-commit failed on clean base"
+
 # 7. --uninstall removes toolkit only, knowledge untouched
 ( cd "$TMP" && "$ROOT/kb-init.sh" --uninstall >/dev/null )
 [ ! -d "$TMP/.kb" ] && ok "--uninstall removed .kb/" || fail ".kb/ survived uninstall"

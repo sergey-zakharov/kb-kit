@@ -2,6 +2,15 @@
 
 All notable changes to kb-kit. Public from the first commit — that's the point.
 
+## v0.1.1 — 2026-07-06
+
+- **`kb-init --hooks`** — the base watches itself, still zero-infra: git
+  pre-commit hygiene check (warn-only, `KB_PRECOMMIT_STRICT=1` to block),
+  Claude Code SessionStart status line + PostToolUse per-edit hygiene feedback
+  to the agent, GitHub Action template staged (activation is the user's call).
+  Never clobbers existing hooks or settings. Filing stays curated — automation
+  watches hygiene, never captures content.
+
 ## v0.1.0 — 2026-07-06
 
 Hardened by two live-corpus shakedowns on top of the rc line:

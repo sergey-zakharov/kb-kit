@@ -73,8 +73,8 @@
 
 ## Phase 9: User Story 7 — Semantic audit (P7)
 
-- [ ] T026 [US7] Author `adapters/claude/skills/kb-audit/SKILL.md` per skill-contracts.md: mechanical candidate pairs from kb-graph.sh output (shared tags / link neighborhoods / same theme / description token overlap), shortlist body reads only, findings report node with quoted evidence from both sides, per-finding confirmation → mirrored flags (`disputed=`, `duplicate-of=`, `superseded-by=`/`supersedes=`) or proposed links, merge preview before any merge. **ITERATIVE — judgment quality tuned against seeded fixtures**
-- [ ] T027 [US7] Extend fixtures with 10 semantic defects (contradicting pairs, near-duplicates, superseded facts) + validation run → `specs/001-kb-kit-v1/validation/us7.md` (SC-010: ≥8 surfaced, zero unconfirmed changes)
+- [X] T026 [US7] Author `adapters/claude/skills/kb-audit/SKILL.md` per skill-contracts.md: mechanical candidate pairs from kb-graph.sh output (shared tags / link neighborhoods / same theme / description token overlap), shortlist body reads only, findings report node with quoted evidence from both sides, per-finding confirmation → mirrored flags (`disputed=`, `duplicate-of=`, `superseded-by=`/`supersedes=`) or proposed links, merge preview before any merge. **ITERATIVE — judgment quality tuned against seeded fixtures**
+- [X] T027 [US7] Extend fixtures with 10 semantic defects (contradicting pairs, near-duplicates, superseded facts) + validation run → `specs/001-kb-kit-v1/validation/us7.md` (SC-010: ≥8 surfaced, zero unconfirmed changes)
 
 ## Phase 10: Polish & real-corpus validation
 

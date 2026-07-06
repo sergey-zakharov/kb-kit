@@ -5,3 +5,4 @@
 - [bad-frontmatter](bad-frontmatter.md) — node with broken frontmatter (seeded defect)
 - [old-queue](old-queue.md) — legacy queue notes, adopted file without frontmatter
 - [deleted-node](deleted-node.md) — stale row: file was removed (seeded defect)
+- [старая заметка о рынке](старая заметка о рынке.md) — adopted, non-ASCII filename (regression: git quotepath)

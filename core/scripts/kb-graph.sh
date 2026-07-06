@@ -42,7 +42,7 @@ emit_tsv() {
   # sees untracked-but-not-ignored new nodes); falls back to find with a prune
   # list when the base is not in git or is itself gitignored (e.g. tmp bases).
   local files
-  files="$(git -C "$BASE" ls-files --cached --others --exclude-standard -- '*.md' 2>/dev/null \
+  files="$(git -C "$BASE" -c core.quotepath=off ls-files --cached --others --exclude-standard -- '*.md' 2>/dev/null \
              | sed "s|^|$BASE/|" | LC_ALL=C sort || true)"
   if [ -z "$files" ]; then
     files="$(find "$BASE" \( -name .git -o -name .kb -o -name .claude -o -name node_modules \

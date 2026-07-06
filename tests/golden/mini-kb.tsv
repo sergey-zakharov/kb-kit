@@ -18,12 +18,12 @@ INDEXROW	product/INDEX.md	product/walk-in-slots.md	1	booked walk-in slots plus a
 INDEXROW	sources/INDEX.md	sources/2026-01-15-podcast-mechanic.md	1	veteran mechanic insider: workbench system, realistic day 8-12 bikes
 INDEXROW	sources/INDEX.md	sources/2026-03-24-video-courier.md	1	bike courier vlogger: queue without rules, regulars drifting away
 INDEXROW	sources/INDEX.md	sources/comments-mining.md	1	cumulative comment mining under repair videos
-NODE	2026-01-15-podcast-mechanic	sources	sources/2026-01-15-podcast-mechanic.md	0	1		source		workshop, mechanics	podcast with a veteran shop mechanic — workbench insider, realistic day 8-12 bikes
-NODE	2026-03-24-video-courier	sources	sources/2026-03-24-video-courier.md	0	1		source		workshop	bike courier vlogger — queue without rules, regulars drifting away
-NODE	comments-mining	sources	sources/comments-mining.md	0	1		source		workshop, community	cumulative mining of comments under repair videos — hidden-fee fear pattern
-NODE	repair-ceiling	product	product/repair-ceiling.md	0	1		fact		capacity, workshop	same-day repair ceiling caps the shop near 12 bikes regardless of staff
-NODE	roadmap-digest	product	product/roadmap-digest.md	0	1		digest		roadmap	digest of current product bets with links to their evidence
-NODE	self-repair-guide	product	product/self-repair-guide.md	0	1		card		content, onboarding	self-repair guide as onboarding funnel, 10 fixes prototype from 2020 podcast
-NODE	walk-in-slots	product	product/walk-in-slots.md	0	1		card		capacity, ux	booked walk-in slots plus a "how soon do I ride again" axis instead of a first-come queue
+NODE	2026-01-15-podcast-mechanic	sources	sources/2026-01-15-podcast-mechanic.md	0	1		source		workshop, mechanics	podcast with a veteran shop mechanic — workbench insider, realistic day 8-12 bikes	name,description,type,tags	podcast-notes,key-quotes
+NODE	2026-03-24-video-courier	sources	sources/2026-03-24-video-courier.md	0	1		source		workshop	bike courier vlogger — queue without rules, regulars drifting away	name,description,type,tags	
+NODE	comments-mining	sources	sources/comments-mining.md	0	1		source		workshop, community	cumulative mining of comments under repair videos — hidden-fee fear pattern	name,description,type,tags	
+NODE	repair-ceiling	product	product/repair-ceiling.md	0	1		fact		capacity, workshop	same-day repair ceiling caps the shop near 12 bikes regardless of staff	name,description,type,tags	
+NODE	roadmap-digest	product	product/roadmap-digest.md	0	1		digest		roadmap	digest of current product bets with links to their evidence	name,description,type,tags	
+NODE	self-repair-guide	product	product/self-repair-guide.md	0	1		card		content, onboarding	self-repair guide as onboarding funnel, 10 fixes prototype from 2020 podcast	name,description,type,tags	
+NODE	walk-in-slots	product	product/walk-in-slots.md	0	1		card		capacity, ux	booked walk-in slots plus a "how soon do I ride again" axis instead of a first-come queue	name,description,type,tags	motivation,design
 THEME	product	1	1	1
 THEME	sources	1	1	1

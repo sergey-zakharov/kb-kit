@@ -49,6 +49,10 @@ echo "$TSV" | grep -q "fake-slug-in-code" && fail "inline code span parsed as li
 echo "$TSV" | grep -q "^FILEREF	product/roadmap-digest.md	../sources/2026-03-24-video-courier.md	1$" \
   && ok "fileref fragment stripped before existence check" || fail "anchor fileref handling wrong"
 
+# 3c. NODE carries fmkeys + headslugs (mask invariant inputs)
+echo "$TSV" | awk -F'\t' '$1=="NODE" && $2=="walk-in-slots" {ok = index($12,"name")>0 && index($12,"tags")>0 && index($13,"motivation")>0 && index($13,"design")>0} END{exit ok?0:1}' \
+  && ok "NODE fmkeys+headslugs populated" || fail "fmkeys/headslugs missing on NODE"
+
 # 4. JSON mode: structurally sane
 J=$($GRAPH --base tests/fixtures/mini-kb)
 echo "$J" | grep -q '"id":"repair-ceiling"' && ok "JSON contains nodes" || fail "JSON missing nodes"

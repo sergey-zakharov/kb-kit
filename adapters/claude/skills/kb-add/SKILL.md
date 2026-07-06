@@ -106,6 +106,20 @@ Second opinion: <text | (none)>
 Open questions: <anything you did not resolve>
 ```
 
+## Mask-aware classification hints
+
+Theme rules (CLAUDE.md per theme) always win; common signals when the base
+wears masks:
+
+- verbatim user words about THEIR life/problem (interview, ticket, review) →
+  `insight` — and it MUST carry the evidence citation; no quote → not an insight;
+- an opinion/belief without evidence ("users surely want…") → `hypothesis`
+  (falsifiable statement + check plan), never an insight;
+- "we decided / решили / выбрали" → `decision` (check for a superseded
+  predecessor — mirrored flags);
+- raw material itself (transcript, article) → the sources-style theme first,
+  then extract typed nodes citing it.
+
 ## Mode: --from-session
 
 When asked to extract facts from the current conversation: list candidate facts

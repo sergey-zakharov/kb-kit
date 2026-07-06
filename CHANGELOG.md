@@ -2,6 +2,20 @@
 
 All notable changes to kb-kit. Public from the first commit — that's the point.
 
+## v0.2.0 — 2026-07-06
+
+- **Product-development mask** — the first full kit-mask: 5 themes (insights
+  with mandatory Mom-Test evidence, journeys as part of the graph, falsifiable
+  hypotheses, ADR-light decisions on mirrored flags, evidence-defined
+  segments), for discovery AND running products. Metrics/OKR deferred to a
+  future product-management-pro mask.
+- **Mask format v2** — multi-theme masks (THEMES= manifest, per-theme
+  rules/templates/checks); per-theme collision handling (skip+report, nothing
+  overwritten); v1 masks unchanged.
+- **Invariant enforcement** — `.kb-checks.conf` per theme; `kb-check` gains
+  finding `mask-invariant` (required frontmatter keys / required sections per
+  node type, mechanical only, adopted nodes exempt).
+
 ## v0.1.2 — 2026-07-06
 
 - **Packs are now masks (kit-masks)** — terminology follows the philosophy: the

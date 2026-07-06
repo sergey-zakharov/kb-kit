@@ -34,6 +34,14 @@ echo "$DTSV" | grep -q "^THEME	ghost	1	0	0$" && ok "ghost theme: in KB.md, no di
 echo "$TSV" | grep -q "missing-inside-fence" && fail "fileref inside code fence parsed" || ok "code fence: filerefs ignored"
 echo "$TSV" | awk -F'\t' '$1=="EDGE" && $3 ~ /^:/{exit 1}' && ok "code fence: regex classes not wikilinks" || fail "[[:<:]] parsed as link"
 
+# 3b. External bases (memory bridge): unresolved link resolves via KB_EXTERNAL_BASES
+$GRAPH --base tests/fixtures/mini-kb-ext --tsv | grep -q "^EDGE	uses-memory	mem-note		link	1$" \
+  && ok "ext link broken without external base" || fail "ext fixture baseline wrong"
+KB_EXTERNAL_BASES="mem=tests/fixtures/ext-mem" $GRAPH --base tests/fixtures/mini-kb-ext --tsv | grep -q "^EDGE	uses-memory	mem-note		external	0$" \
+  && ok "ext link resolves via external base" || fail "external resolution failed"
+KB_EXTERNAL_BASES="mem=tests/fixtures/ext-mem" $GRAPH --base tests/fixtures/mini-kb-ext | grep -q '"external":true' \
+  && ok "JSON carries external flag" || fail "JSON external flag missing"
+
 # 4. JSON mode: structurally sane
 J=$($GRAPH --base tests/fixtures/mini-kb)
 echo "$J" | grep -q '"id":"repair-ceiling"' && ok "JSON contains nodes" || fail "JSON missing nodes"

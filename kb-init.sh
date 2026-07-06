@@ -13,7 +13,7 @@
 set -euo pipefail
 
 SRC_DIR="$(cd "$(dirname "$0")" && pwd)"
-VERSION="0.1.0-dev"
+VERSION="$(git -C "$SRC_DIR" describe --tags --always 2>/dev/null || echo 0.1.0-dev)"
 TARGET="$(pwd)"
 KB_DIR="kb"
 MODE="scaffold"
@@ -44,7 +44,11 @@ copy_toolkit() {
 }
 
 write_config() {
-  printf 'KB_DIR=%s\nKB_KIT_VERSION=%s\n' "$1" "$VERSION" > "$TARGET/.kb/config"
+  # preserve user-added lines (EXTERNAL_BASE_*, etc.) across updates
+  local extra=""
+  [ -f "$TARGET/.kb/config" ] && extra="$(grep -v -e '^KB_DIR=' -e '^KB_KIT_VERSION=' "$TARGET/.kb/config" || true)"
+  { printf 'KB_DIR=%s\nKB_KIT_VERSION=%s\n' "$1" "$VERSION"
+    [ -n "$extra" ] && printf '%s\n' "$extra"; } > "$TARGET/.kb/config"
 }
 
 git rev-parse --git-dir >/dev/null 2>&1 || say "kb-init: WARNING — target is not a git repository; diff/review/rollback safety degraded"

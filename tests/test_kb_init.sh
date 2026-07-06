@@ -45,6 +45,12 @@ CHANGED=$(cd "$TMP2" && git status --porcelain -- docs | grep -v 'MIGRATION_REPO
 grep -q "product/" "$TMP2/docs/MIGRATION_REPORT.md" && ok "report lists candidate themes" || fail "themes not in report"
 grep -q "KB_DIR=docs" "$TMP2/.kb/config" && ok "config points at corpus" || fail "config KB_DIR wrong"
 
+# 4b. --update preserves custom config lines (external bases etc.)
+echo "EXTERNAL_BASE_mem=/tmp/somewhere" >> "$TMP/.kb/config"
+( cd "$TMP" && "$ROOT/kb-init.sh" --update >/dev/null )
+grep -q "^EXTERNAL_BASE_mem=/tmp/somewhere$" "$TMP/.kb/config" && ok "--update preserves custom config lines" || fail "--update wiped custom config"
+grep -q "^KB_KIT_VERSION=v" "$TMP/.kb/config" && ok "version stamped from git describe" || fail "version not stamped"
+
 # 5. --json mode
 ( cd "$TMP" && "$ROOT/kb-init.sh" --update --json | grep -q '"status":"ok"' ) && ok "--json output" || fail "--json broken"
 

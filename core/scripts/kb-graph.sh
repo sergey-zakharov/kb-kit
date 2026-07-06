@@ -37,6 +37,15 @@ fi
 [ -d "$BASE" ] || { echo "kb-graph: base dir not found: $BASE" >&2; exit 2; }
 BASE="${BASE%/}"
 
+# External bases (memory bridge): unresolved [[slug]] links are looked up in
+# each external base (flat <path>/<slug>.md) before being declared broken.
+# Config: EXTERNAL_BASE_<name>=<abs-path> lines in ./.kb/config;
+# override for tests/tooling: KB_EXTERNAL_BASES="name=path;name=path".
+EXT="${KB_EXTERNAL_BASES:-}"
+if [ -z "$EXT" ] && [ -f .kb/config ]; then
+  EXT="$(awk -F= '/^EXTERNAL_BASE_/{n=$1; sub(/^EXTERNAL_BASE_/,"",n); printf "%s=%s;", n, $2}' .kb/config)"
+fi
+
 emit_tsv() {
   # File enumeration: git-first (respects .gitignore incl. venvs/build dirs,
   # sees untracked-but-not-ignored new nodes); falls back to find with a prune
@@ -51,7 +60,7 @@ emit_tsv() {
          -o -type f -name '*.md' -print | LC_ALL=C sort)"
   fi
   [ -n "$files" ] || return 0
-  printf '%s\n' "$files" | tr '\n' '\0' | xargs -0 env LC_ALL=C awk -v BASE="$BASE" '
+  printf '%s\n' "$files" | tr '\n' '\0' | xargs -0 env LC_ALL=C awk -v BASE="$BASE" -v EXT="$EXT" '
   function relpath(p,  b) {
     b = BASE
     if (index(p, b "/") == 1) return substr(p, length(b) + 2)
@@ -184,12 +193,27 @@ emit_tsv() {
       }
       printf "NODE\t%s\t%s\t%s\t%d\t%d\t%s\t%s\t%s\t%s\t%s\n", id, ntheme[id], nrel[id], adopted[id], fmvalid, prob, ntype[id], nflags[id], ntags[id], ndesc[id]
     }
+    # external bases: name=path pairs
+    extn = split(EXT, extp, ";")
+    for (i = 1; i <= extn; i++) {
+      p = index(extp[i], "=")
+      if (p > 0) extpath[++extc] = substr(extp[i], p + 1)
+    }
     # EDGE records
     for (i = 1; i <= ec; i++) {
       to = eto[i]; anc = eanc[i]
       kind = (anc == "" ? "link" : "anchor")
       broken = 0
-      if (!(to in nrel)) { broken = 1; kind = "link" }
+      if (!(to in nrel)) {
+        broken = 1; kind = "link"
+        if (!(to in extseen)) {
+          extfound[to] = 0
+          for (x = 1; x <= extc; x++)
+            if (system("test -f '\''" extpath[x] "/" to ".md'\''") == 0) { extfound[to] = 1; break }
+          extseen[to] = 1
+        }
+        if (extfound[to]) { broken = 0; kind = "external" }
+      }
       else if (anc != "") {
         if (substr(anc, 1, 1) == "^") { if (!((to "\t" anc) in blocks)) broken = 1 }
         else                          { if (!((to "\t" slug(anc)) in heads)) broken = 1 }
@@ -249,7 +273,7 @@ emit_tsv | LC_ALL=C sort -t"$(printf '\t')" -k1,1 -s | awk -F"\t" '
   }
   $1 == "EDGE" {
     edges = edges (edges == "" ? "" : ",\n    ") \
-      "{\"from\":\"" jesc($2) "\",\"to\":\"" jesc($3) "\",\"anchor\":" ($4 == "" ? "null" : "\"" jesc($4) "\"") ",\"broken\":" ($6 == 1 ? "true" : "false") "}"
+      "{\"from\":\"" jesc($2) "\",\"to\":\"" jesc($3) "\",\"anchor\":" ($4 == "" ? "null" : "\"" jesc($4) "\"") ",\"broken\":" ($6 == 1 ? "true" : "false") ",\"external\":" ($5 == "external" ? "true" : "false") "}"
   }
   END {
     printf "{\n  \"nodes\": [\n    %s\n  ],\n  \"edges\": [\n    %s\n  ]\n}\n", nodes, edges

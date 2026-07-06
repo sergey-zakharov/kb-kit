@@ -48,7 +48,7 @@ write_config() {
   local extra=""
   [ -f "$TARGET/.kb/config" ] && extra="$(grep -v -e '^KB_DIR=' -e '^KB_KIT_VERSION=' "$TARGET/.kb/config" || true)"
   { printf 'KB_DIR=%s\nKB_KIT_VERSION=%s\n' "$1" "$VERSION"
-    [ -n "$extra" ] && printf '%s\n' "$extra"; } > "$TARGET/.kb/config"
+    if [ -n "$extra" ]; then printf '%s\n' "$extra"; fi; } > "$TARGET/.kb/config"
 }
 
 git rev-parse --git-dir >/dev/null 2>&1 || say "kb-init: WARNING — target is not a git repository; diff/review/rollback safety degraded"

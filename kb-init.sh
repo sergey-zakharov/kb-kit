@@ -63,7 +63,7 @@ scaffold)
   else
     say "kb-init: base already exists at $KB_DIR/ — knowledge untouched, toolkit refreshed"
   fi
-  [ "$JSON" = 1 ] && printf '{"status":"ok","mode":"scaffold","kb_dir":"%s"}\n' "$KB_DIR"
+  if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"scaffold","kb_dir":"%s"}\n' "$KB_DIR"; fi
   ;;
 
 update)
@@ -72,7 +72,7 @@ update)
   copy_toolkit
   write_config "$KB_DIR"
   say "kb-init: toolkit refreshed (.kb/, .claude/skills/); knowledge content untouched"
-  [ "$JSON" = 1 ] && printf '{"status":"ok","mode":"update","kb_dir":"%s"}\n' "$KB_DIR"
+  if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"update","kb_dir":"%s"}\n' "$KB_DIR"; fi
   ;;
 
 migrate)
@@ -121,7 +121,7 @@ migrate)
     echo "- $dated files start with a YYYY-MM-DD prefix."
   } > "$RPT"
   say "kb-init: toolkit installed; inventory written to $CORPUS/MIGRATION_REPORT.md (report only, no content changes)"
-  [ "$JSON" = 1 ] && printf '{"status":"ok","mode":"migrate","kb_dir":"%s","report":"%s/MIGRATION_REPORT.md"}\n' "$CORPUS" "$CORPUS"
+  if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"migrate","kb_dir":"%s","report":"%s/MIGRATION_REPORT.md"}\n' "$CORPUS" "$CORPUS"; fi
   ;;
 
 apply)
@@ -145,7 +145,7 @@ apply)
     } > "$TARGET/$KB_DIR/KB.md"
     say "kb-init: KB.md skeleton created at $KB_DIR/KB.md from report (only new file added)"
   fi
-  [ "$JSON" = 1 ] && printf '{"status":"ok","mode":"apply","kb_dir":"%s"}\n' "$KB_DIR"
+  if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"apply","kb_dir":"%s"}\n' "$KB_DIR"; fi
   ;;
 
 pack)
@@ -181,6 +181,6 @@ pack)
     ' "$TARGET/$KB_DIR/KB.md" > "$TARGET/$KB_DIR/KB.md.tmp" && mv "$TARGET/$KB_DIR/KB.md.tmp" "$TARGET/$KB_DIR/KB.md"
   fi
   say "kb-init: pack '$PNAME' installed — theme $KB_DIR/$SLUG/ (INDEX.md, CLAUDE.md), templates in .kb/packs/$PNAME/templates/"
-  [ "$JSON" = 1 ] && printf '{"status":"ok","mode":"pack","pack":"%s","theme":"%s/%s"}\n' "$PNAME" "$KB_DIR" "$SLUG"
+  if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"pack","pack":"%s","theme":"%s/%s"}\n' "$PNAME" "$KB_DIR" "$SLUG"; fi
   ;;
 esac

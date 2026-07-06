@@ -78,13 +78,13 @@
 
 ## Phase 10: Polish & real-corpus validation
 
-- [ ] T028 Cross-skill consistency review: flags warnings in kb-ask, flagged-node listing in kb-check, evidence-citation format identical across kb-add/kb-ask/pack templates (one pass over all SKILL.md files)
+- [X] T028 Cross-skill consistency review: flags warnings in kb-ask, flagged-node listing in kb-check, evidence-citation format identical across kb-add/kb-ask/pack templates (one pass over all SKILL.md files)
 - [ ] T029 Corpus validation №1 — private corpus A (research docs) (copy): full migration flow (US3), then one /kb-add and one /kb-ask on the migrated base → `specs/001-kb-kit-v1/validation/corpus-a-docs.md` (SC-003)
 - [ ] T030 Corpus validation №2 — private corpus B (sales CRM) (copy, 174 cards): kb-check must independently rediscover the documented reconciliation-note drift class → `specs/001-kb-kit-v1/validation/corpus-b-crm.md` (SC-006 real-world)
 - [ ] T031 Corpus validation №3 — private corpus C (client intake) (copy, ~240 heterogeneous files): /kb-add files 5 raw items incl. call-transcript quotes as evidence citations; non-md artifacts linked, not nodified → `specs/001-kb-kit-v1/validation/corpus-c-intake.md` (SC-001, SC-005, SC-009 real-world)
-- [ ] T032 [P] Verify quickstart.md end-to-end on a clean tmp repo (SC-004: nothing running, git+agent only); fix README install section to real paths and sweep README for overclaiming (verb tense honest vs shipped state)
-- [ ] T033 [P] Bootstrap public changelog `CHANGELOG.md` (v0.1 notes) per distribution-first strategy
-- [ ] T034 [P] Add `LICENSE` (MIT) + attribution note in README credits (launch blocker for OSS distribution)
+- [X] T032 [P] Verify quickstart.md end-to-end on a clean tmp repo (SC-004: nothing running, git+agent only); fix README install section to real paths and sweep README for overclaiming (verb tense honest vs shipped state)
+- [X] T033 [P] Bootstrap public changelog `CHANGELOG.md` (v0.1 notes) per distribution-first strategy
+- [X] T034 [P] Add `LICENSE` (MIT) + attribution note in README credits (launch blocker for OSS distribution)
 
 ## Dependencies & execution order
 

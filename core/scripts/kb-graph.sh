@@ -16,7 +16,7 @@
 # MIGRATION_REPORT.md AUDIT_*.md
 set -euo pipefail
 
-BASE="."
+BASE=""
 MODE="json"
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -26,13 +26,30 @@ while [ $# -gt 0 ]; do
     *) echo "Usage: kb-graph.sh [--base <dir>] [--json|--tsv]" >&2; exit 2 ;;
   esac
 done
+# Default base: KB_DIR from ./.kb/config (never scan the whole cwd by accident)
+if [ -z "$BASE" ]; then
+  if [ -f .kb/config ]; then
+    BASE="$(awk -F= '$1=="KB_DIR"{print $2}' .kb/config)"
+  else
+    BASE="."
+  fi
+fi
 [ -d "$BASE" ] || { echo "kb-graph: base dir not found: $BASE" >&2; exit 2; }
 BASE="${BASE%/}"
 
 emit_tsv() {
+  # File enumeration: git-first (respects .gitignore incl. venvs/build dirs,
+  # sees untracked-but-not-ignored new nodes); falls back to find with a prune
+  # list when the base is not in git or is itself gitignored (e.g. tmp bases).
   local files
-  files="$(find "$BASE" \( -name .git -o -name .kb -o -name .claude -o -name node_modules \) -prune \
-       -o -type f -name '*.md' -print | LC_ALL=C sort)"
+  files="$(git -C "$BASE" ls-files --cached --others --exclude-standard -- '*.md' 2>/dev/null \
+             | sed "s|^|$BASE/|" | LC_ALL=C sort || true)"
+  if [ -z "$files" ]; then
+    files="$(find "$BASE" \( -name .git -o -name .kb -o -name .claude -o -name node_modules \
+         -o -name venv -o -name .venv -o -name __pycache__ -o -name site-packages \
+         -o -name dist -o -name build -o -name vendor -o -name target \) -prune \
+         -o -type f -name '*.md' -print | LC_ALL=C sort)"
+  fi
   [ -n "$files" ] || return 0
   printf '%s\n' "$files" | tr '\n' '\0' | xargs -0 env LC_ALL=C awk -v BASE="$BASE" '
   function relpath(p,  b) {
@@ -61,7 +78,9 @@ emit_tsv() {
       if (h > 0) { anc = substr(inner, h + 1); inner = substr(inner, 1, h - 1) }
       pi = index(inner, "|"); if (pi > 0) inner = substr(inner, 1, pi - 1)
       inner = trim(inner); anc = trim(anc)
-      if (inner != "") { ec++; efrom[ec] = id; eto[ec] = inner; eanc[ec] = anc }
+      # slugs only: kills regex/POSIX-class noise like [[:<:]] from code samples
+      if (inner !~ /^[A-Za-z0-9][A-Za-z0-9._-]*$/) continue
+      ec++; efrom[ec] = id; eto[ec] = inner; eanc[ec] = anc
     }
   }
   function scanfilerefs(s, fromrel, fromdir,   i, rest, cl, p) {
@@ -91,7 +110,7 @@ emit_tsv() {
       nc++; norder[nc] = nid
       nrel[nid] = rel; ntheme[nid] = theme
       nname[nid] = ""; ndesc[nid] = ""; ntype[nid] = ""; ntags[nid] = ""; nflags[nid] = ""
-      adopted[nid] = 1; infm = 0; fmwas = 0
+      adopted[nid] = 1; infm = 0; fmwas = 0; infence = 0
       if (theme != "") themenodes[theme] = 1
     }
   }
@@ -112,6 +131,9 @@ emit_tsv() {
         }
         next
       }
+      # fenced code blocks: no headings, anchors, links, or filerefs inside
+      if (line ~ /^(```|~~~)/) { infence = !infence; next }
+      if (infence) next
       if (line ~ /^#/) { h = line; sub(/^#+[ \t]*/, "", h); heads[nid "\t" slug(h)] = 1 }
       if (line ~ /(^|[ \t])\^[A-Za-z0-9_-]+[ \t]*$/) {
         b = line; sub(/^.*\^/, "^", b); b = trim(b); blocks[nid "\t" b] = 1
@@ -184,8 +206,11 @@ emit_tsv() {
     for (i = 1; i <= irc; i++)
       printf "INDEXROW\t%s\t%s\t%d\t%s\n", irfile[i], irtgt[i], (irtgt[i] in allmd) ? 1 : 0, irhook[i]
     # THEME records (union of themes with nodes and themes listed in KB.md)
-    for (t in themenodes) if (!(t in kbtheme)) printf "THEME\t%s\t0\t1\n", t
-    for (t in kbtheme)    printf "THEME\t%s\t1\t%d\n", t, (t in themenodes) ? 1 : 0
+    # fields: name  in_kb  has_nodes  has_index
+    for (t in themenodes) if (!(t in kbtheme))
+      printf "THEME\t%s\t0\t1\t%d\n", t, ((t "/INDEX.md") in allmd) ? 1 : 0
+    for (t in kbtheme)
+      printf "THEME\t%s\t1\t%d\t%d\n", t, (t in themenodes) ? 1 : 0, ((t "/INDEX.md") in allmd) ? 1 : 0
     # INBOX records
     for (i = 1; i <= bc; i++) printf "INBOX\tblocked\t%s\n", btext[i]
   }

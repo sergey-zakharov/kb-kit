@@ -29,7 +29,10 @@ echo "$DTSV" | grep -q "^EDGE	repair-ceiling	one-source	^q1	anchor	0$" && ok "va
 echo "$DTSV" | awk -F'\t' '$1=="NODE" && $2=="old-queue"{if($5=="1" && $6=="1" && $11!="") found=1} END{exit found?0:1}' \
   && ok "adopted node: adopted=1, exempt, description from index row" || fail "adopted node handling wrong"
 echo "$DTSV" | grep -q "^FILEREF	product/repair-ceiling.md	missing.mp3	0$" && ok "missing fileref detected" || fail "missing fileref not detected"
-echo "$DTSV" | grep -q "^THEME	stray	0	1$" && ok "stray theme not in KB.md" || fail "stray theme record wrong"
+echo "$DTSV" | grep -q "^THEME	stray	0	1	1$" && ok "stray theme not in KB.md" || fail "stray theme record wrong"
+echo "$DTSV" | grep -q "^THEME	ghost	1	0	0$" && ok "ghost theme: in KB.md, no dir/index" || fail "ghost theme record wrong"
+echo "$TSV" | grep -q "missing-inside-fence" && fail "fileref inside code fence parsed" || ok "code fence: filerefs ignored"
+echo "$TSV" | awk -F'\t' '$1=="EDGE" && $3 ~ /^:/{exit 1}' && ok "code fence: regex classes not wikilinks" || fail "[[:<:]] parsed as link"
 
 # 4. JSON mode: structurally sane
 J=$($GRAPH --base tests/fixtures/mini-kb)

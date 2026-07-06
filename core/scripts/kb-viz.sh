@@ -5,7 +5,7 @@
 # Usage: kb-viz.sh [--base <dir>] [--out <file>]   (default out: kb-graph.html)
 set -euo pipefail
 
-BASE="."
+BASE=""
 OUT="kb-graph.html"
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -14,6 +14,9 @@ while [ $# -gt 0 ]; do
     *) echo "Usage: kb-viz.sh [--base <dir>] [--out <file>]" >&2; exit 2 ;;
   esac
 done
+if [ -z "$BASE" ]; then
+  if [ -f .kb/config ]; then BASE="$(awk -F= '$1=="KB_DIR"{print $2}' .kb/config)"; else BASE="."; fi
+fi
 SELF_DIR="$(cd "$(dirname "$0")" && pwd)"
 GRAPH="$SELF_DIR/kb-graph.sh"
 TPL="$SELF_DIR/viz-template.html"

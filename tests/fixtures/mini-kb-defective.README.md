@@ -15,6 +15,7 @@ Lives outside the fixture dir so it is not scanned as a node. Expected findings
 | 8 | flagged-node | product/repair-ceiling.md | disputed=walk-in-slots |
 | 9 | flagged-node | product/walk-in-slots.md | disputed=repair-ceiling |
 | 10 | inbox-blocked | INBOX.md | `[?]` item awaiting user |
+| 11 | theme-index-missing | ghost | KB.md lists `ghost/` but the theme dir/INDEX.md do not exist |
 
 Non-findings by design (exemptions under test):
 

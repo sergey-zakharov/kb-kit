@@ -31,9 +31,10 @@ expect frontmatter-invalid  product/bad-frontmatter.md
 expect flagged-node         product/repair-ceiling.md
 expect flagged-node         product/walk-in-slots.md
 expect inbox-blocked        INBOX.md
+expect theme-index-missing  ghost
 
 N=$(echo "$JOUT" | grep -c '"type":')
-[ "$N" -eq 10 ] && ok "exactly 10 findings" || fail "expected 10 findings, got $N"
+[ "$N" -eq 11 ] && ok "exactly 11 findings" || fail "expected 11 findings, got $N"
 
 # 3. Exemptions and precedence
 echo "$JOUT" | grep -q '"file": "product/old-queue.md"' && fail "adopted node wrongly flagged" || ok "adopted node exempt"

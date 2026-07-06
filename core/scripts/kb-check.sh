@@ -13,7 +13,7 @@
 # Adopted nodes (no frontmatter) are exempt from frontmatter-invalid.
 set -euo pipefail
 
-BASE="."
+BASE=""
 MODE="human"
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -22,6 +22,9 @@ while [ $# -gt 0 ]; do
     *) echo "Usage: kb-check.sh [--base <dir>] [--json]" >&2; exit 2 ;;
   esac
 done
+if [ -z "$BASE" ]; then
+  if [ -f .kb/config ]; then BASE="$(awk -F= '$1=="KB_DIR"{print $2}' .kb/config)"; else BASE="."; fi
+fi
 SELF_DIR="$(cd "$(dirname "$0")" && pwd)"
 GRAPH="$SELF_DIR/kb-graph.sh"
 [ -x "$GRAPH" ] || { echo "kb-check: kb-graph.sh not found next to kb-check.sh" >&2; exit 2; }
@@ -48,7 +51,10 @@ GRAPH="$SELF_DIR/kb-graph.sh"
     indexed[$3] = 1
     if ($4 == "0") { src++; srfile[src] = $2; srtgt[src] = $3 }
   }
-  $1 == "THEME" { if ($3 == "0" && $4 == "1" && $2 != "") tmiss[++tc] = $2 }
+  $1 == "THEME" {
+    if ($3 == "0" && $4 == "1" && $2 != "") tmiss[++tc] = $2
+    if ($3 == "1" && $5 == "0" && $2 != "") timiss[++tic] = $2
+  }
   $1 == "INBOX" { if ($2 == "blocked") { bc++; btext[bc] = $3 } }
   END {
     for (i = 1; i <= ec; i++) {
@@ -76,6 +82,8 @@ GRAPH="$SELF_DIR/kb-graph.sh"
     }
     for (i = 1; i <= tc; i++)
       addf("unindexed-theme", tmiss[i], "theme directory not listed in KB.md", "")
+    for (i = 1; i <= tic; i++)
+      addf("theme-index-missing", timiss[i], "KB.md lists this theme but its INDEX.md does not exist yet — generate it (planned theme) or fix the KB.md row", "")
     for (i = 1; i <= bc; i++)
       addf("inbox-blocked", "INBOX.md", "item awaiting user: " btext[i], "")
 

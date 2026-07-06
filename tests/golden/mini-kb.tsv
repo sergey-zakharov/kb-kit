@@ -24,5 +24,5 @@ NODE	repair-ceiling	product	product/repair-ceiling.md	0	1		fact		capacity, works
 NODE	roadmap-digest	product	product/roadmap-digest.md	0	1		digest		roadmap	digest of current product bets with links to their evidence
 NODE	self-repair-guide	product	product/self-repair-guide.md	0	1		card		content, onboarding	self-repair guide as onboarding funnel, 10 fixes prototype from 2020 podcast
 NODE	walk-in-slots	product	product/walk-in-slots.md	0	1		card		capacity, ux	booked walk-in slots plus a "how soon do I ride again" axis instead of a first-come queue
-THEME	product	1	1
-THEME	sources	1	1
+THEME	product	1	1	1
+THEME	sources	1	1	1

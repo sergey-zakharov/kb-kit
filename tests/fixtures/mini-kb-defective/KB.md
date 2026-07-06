@@ -4,6 +4,7 @@
 
 - [product/](product/INDEX.md) — product decisions and idea cards
 - [sources/](sources/INDEX.md) — sources library
+- [ghost/](ghost/INDEX.md) — planned theme, dir not created yet (seeded defect)
 
 ## Conventions
 

@@ -31,8 +31,21 @@ Retrieval is two-stage and token-cheap: the agent reads indexes first, then open
 | `/kb-add <raw material>` | Files a fact: picks the theme, creates or updates nodes, updates the index, sets links. Asks when unsure — never guesses silently. |
 | `/kb-ask <question>` | Answers from the base with file-level citations — in a fresh session, zero prior context. |
 | `/kb-check` | Finds broken links, orphan nodes, and index drift; fixes them or proposes fixes. |
+| `/kb-audit` | Semantic deep-scan: contradictions, near-duplicates, superseded facts. Approved findings become visible marks on the nodes — inconsistency is either resolved or labeled, never silent. |
 | `/kb-viz` | Generates a self-contained interactive HTML graph of your base. A file, not an app. |
 | `kb-init` | Installs into any repo — including *on top of an existing corpus*, without moving a single file. Your conventions win; kb-kit adapts. |
+
+## Install
+
+```bash
+git clone <this-repo> ~/tools/kb-kit
+cd ~/your-project && ~/tools/kb-kit/kb-init.sh          # new base in kb/
+# or over an existing docs folder, without touching a single file:
+cd ~/your-project && ~/tools/kb-kit/kb-init.sh --migrate docs
+```
+
+Requirements: git, bash, and Claude Code. Nothing else — no runtime
+dependencies, no daemons, no build step.
 
 ## Principles
 
@@ -49,7 +62,7 @@ v1 in active development, spec-driven (see `specs/`). First adopter: a real prod
 
 ## Roadmap
 
-- **Packs** — vertical disciplines installed on top of the engine: sales CRM, startup validation, content pipeline, fundraising
+- **Packs** — vertical disciplines installed as modules on top of the engine. Flagship: **product development** (CX and customer-journey work, product-management best practices for new and existing products). Also: sales CRM, content pipeline, fundraising
 - **Adapters** — agent-neutral core; Codex (`AGENTS.md`) adapter next
 - **Registry** — discover and install community packs
 - **Embeddings** — optional derived cache for when a base outgrows grep (files stay the source of truth)

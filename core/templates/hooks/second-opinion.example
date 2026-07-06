@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# second-opinion.example — optional classification hook for /kb-add.
+#
+# Install: copy to .kb/hooks/second-opinion and chmod +x. When present, /kb-add
+# pipes the candidate classification to it and includes stdout in its report.
+# When absent, filing proceeds identically. Non-zero exit = opinion ignored.
+#
+# Contract (cli-contracts.md):
+#   stdin:  {"fact": "...", "proposed_theme": "...", "proposed_node": "...", "links": ["..."]}
+#   stdout: plain-text opinion
+#   exit:   0
+#
+# Wire anything here: `codex exec`, a curl to any model API, or a static
+# checklist. This example just restates the proposal (replace it).
+
+INPUT="$(cat)"
+echo "second-opinion (example hook): no objection to proposal: $INPUT"
+exit 0

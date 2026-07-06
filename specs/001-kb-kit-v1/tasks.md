@@ -47,11 +47,11 @@
 
 ## Phase 5: User Story 3 — Install & migrate (P3)
 
-- [ ] T014 [US3] Implement `kb-init.sh` scaffold mode + `--update` + `--json` + `.kb/config` per cli-contracts.md (copies core→`.kb/`, adapters→`.claude/skills/`; idempotent; `--update` never touches KB_DIR content)
-- [ ] T015 [US3] Implement `kb-init.sh --migrate <dir>` (mechanical inventory → MIGRATION_REPORT.md: candidate themes, index-like files, naming patterns, frontmatter presence, non-md artifacts) and `--apply-migration <report>` (adds rules/index adoptions only; never moves/renames/rewrites content)
-- [ ] T016 [US3] Test `tests/test_kb_init.sh`: scaffold on empty tmp repo, re-run idempotency, `--update` content-untouched assertion, `--migrate` writes only the report
-- [ ] T017 [US3] Author `adapters/claude/skills/kb-init/SKILL.md`: read report + corpus READMEs → draft per-theme rules capturing corpus conventions → present full plan → apply on confirmation; ambiguity reported not normalized
-- [ ] T018 [P] [US3] Author `adapters/claude/theme-CLAUDE.md.tmpl` (thin wrapper including theme rules into Claude's native nested-context mechanism)
+- [X] T014 [US3] Implement `kb-init.sh` scaffold mode + `--update` + `--json` + `.kb/config` per cli-contracts.md (copies core→`.kb/`, adapters→`.claude/skills/`; idempotent; `--update` never touches KB_DIR content)
+- [X] T015 [US3] Implement `kb-init.sh --migrate <dir>` (mechanical inventory → MIGRATION_REPORT.md: candidate themes, index-like files, naming patterns, frontmatter presence, non-md artifacts) and `--apply-migration <report>` (adds rules/index adoptions only; never moves/renames/rewrites content)
+- [X] T016 [US3] Test `tests/test_kb_init.sh`: scaffold on empty tmp repo, re-run idempotency, `--update` content-untouched assertion, `--migrate` writes only the report
+- [X] T017 [US3] Author `adapters/claude/skills/kb-init/SKILL.md`: read report + corpus READMEs → draft per-theme rules capturing corpus conventions → present full plan → apply on confirmation; ambiguity reported not normalized
+- [X] T018 [P] [US3] Author `adapters/claude/theme-CLAUDE.md.tmpl` (thin wrapper including theme rules into Claude's native nested-context mechanism)
 
 **Checkpoint**: kb-kit installable anywhere, including over existing corpora
 

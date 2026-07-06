@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+# kb-init.sh — install kb-kit into a target repository (spec-kit model: copy, no runtime dependency back).
+# Zero dependencies: bash + coreutils + find + awk.
+#
+# Usage (run from anywhere; target = current directory):
+#   kb-init.sh [--dir <kb-dir>]          scaffold a new base (default: kb/)
+#   kb-init.sh --migrate <corpus-dir>    install toolkit + write MIGRATION_REPORT.md (report only)
+#   kb-init.sh --apply-migration <rpt>   create KB.md skeleton from a reviewed report (adds files only)
+#   kb-init.sh --update                  refresh .kb/ and .claude/skills/ (never touches knowledge)
+#   kb-init.sh --pack <name|path>        install a pack (Phase 8)
+#   kb-init.sh --json                    machine-readable result
+# Exit: 0 ok, 1 findings/conflict, 2 usage/environment error.
+set -euo pipefail
+
+SRC_DIR="$(cd "$(dirname "$0")" && pwd)"
+VERSION="0.1.0-dev"
+TARGET="$(pwd)"
+KB_DIR="kb"
+MODE="scaffold"
+ARG=""
+JSON=0
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --dir)             KB_DIR="${2:?}"; shift 2 ;;
+    --migrate)         MODE="migrate"; ARG="${2:?}"; shift 2 ;;
+    --apply-migration) MODE="apply"; ARG="${2:?}"; shift 2 ;;
+    --update)          MODE="update"; shift ;;
+    --pack)            MODE="pack"; ARG="${2:?}"; shift 2 ;;
+    --json)            JSON=1; shift ;;
+    *) echo "kb-init: unknown option $1" >&2; exit 2 ;;
+  esac
+done
+
+say() { [ "$JSON" = 1 ] || echo "$@"; }
+
+copy_toolkit() {
+  mkdir -p "$TARGET/.kb/scripts" "$TARGET/.kb/templates" "$TARGET/.kb/packs" "$TARGET/.kb/hooks" "$TARGET/.claude/skills"
+  cp -f "$SRC_DIR"/core/scripts/* "$TARGET/.kb/scripts/"
+  cp -rf "$SRC_DIR"/core/templates/. "$TARGET/.kb/templates/"
+  [ -d "$SRC_DIR/core/packs" ] && cp -rf "$SRC_DIR"/core/packs/. "$TARGET/.kb/packs/" 2>/dev/null || true
+  cp -rf "$SRC_DIR"/adapters/claude/skills/. "$TARGET/.claude/skills/"
+  chmod +x "$TARGET"/.kb/scripts/*.sh 2>/dev/null || true
+}
+
+write_config() {
+  printf 'KB_DIR=%s\nKB_KIT_VERSION=%s\n' "$1" "$VERSION" > "$TARGET/.kb/config"
+}
+
+git rev-parse --git-dir >/dev/null 2>&1 || say "kb-init: WARNING — target is not a git repository; diff/review/rollback safety degraded"
+
+case "$MODE" in
+
+scaffold)
+  copy_toolkit
+  write_config "$KB_DIR"
+  if [ ! -f "$TARGET/$KB_DIR/KB.md" ]; then
+    mkdir -p "$TARGET/$KB_DIR"
+    proj="$(basename "$TARGET")"
+    sed "s/{{project}}/$proj/" "$SRC_DIR/core/templates/KB.md" | grep -v '^- \[{{theme}}' > "$TARGET/$KB_DIR/KB.md"
+    grep -v '{{raw item}}' "$SRC_DIR/core/templates/INBOX.md" > "$TARGET/$KB_DIR/INBOX.md"
+    say "kb-init: scaffolded base at $KB_DIR/ (KB.md, INBOX.md)"
+  else
+    say "kb-init: base already exists at $KB_DIR/ — knowledge untouched, toolkit refreshed"
+  fi
+  [ "$JSON" = 1 ] && printf '{"status":"ok","mode":"scaffold","kb_dir":"%s"}\n' "$KB_DIR"
+  ;;
+
+update)
+  [ -f "$TARGET/.kb/config" ] || { echo "kb-init: nothing to update (.kb/config missing) — run scaffold first" >&2; exit 2; }
+  KB_DIR="$(awk -F= '$1=="KB_DIR"{print $2}' "$TARGET/.kb/config")"
+  copy_toolkit
+  write_config "$KB_DIR"
+  say "kb-init: toolkit refreshed (.kb/, .claude/skills/); knowledge content untouched"
+  [ "$JSON" = 1 ] && printf '{"status":"ok","mode":"update","kb_dir":"%s"}\n' "$KB_DIR"
+  ;;
+
+migrate)
+  CORPUS="${ARG%/}"
+  [ -d "$TARGET/$CORPUS" ] || { echo "kb-init: corpus dir not found: $CORPUS" >&2; exit 2; }
+  copy_toolkit
+  write_config "$CORPUS"
+  RPT="$TARGET/$CORPUS/MIGRATION_REPORT.md"
+  {
+    echo "# Migration report — $CORPUS ($(date +%Y-%m-%d 2>/dev/null || echo today))"
+    echo
+    echo "Mechanical inventory only. NOTHING was moved, renamed, or rewritten."
+    echo "Next: run /kb-init in your agent — it reads this report plus your READMEs,"
+    echo "drafts per-theme rules capturing YOUR conventions, and applies only after"
+    echo "your confirmation."
+    echo
+    echo "## Candidate themes (subdirectories with markdown files)"
+    echo
+    find "$TARGET/$CORPUS" -mindepth 1 -maxdepth 1 -type d | LC_ALL=C sort | while read -r d; do
+      n=$(find "$d" -name '*.md' -type f | wc -l)
+      [ "$n" -gt 0 ] || continue
+      fm=$(find "$d" -name '*.md' -type f -exec sh -c 'head -1 "$1" | grep -q "^---$"' _ {} \; -print 2>/dev/null | wc -l)
+      idx=""
+      for cand in INDEX.md README.md; do
+        [ -f "$d/$cand" ] && grep -q '](.*\.md)' "$d/$cand" && idx="$cand" && break
+      done
+      echo "- \`$(basename "$d")/\` — $n md files, $fm with frontmatter${idx:+, index-like file: $idx}"
+    done
+    echo
+    echo "## Root-level markdown files"
+    echo
+    find "$TARGET/$CORPUS" -maxdepth 1 -type f -name '*.md' ! -name 'MIGRATION_REPORT.md' | LC_ALL=C sort | while read -r f; do
+      rows=$(grep -c '](.*\.md)' "$f" 2>/dev/null || true)
+      echo "- \`$(basename "$f")\` — ${rows:-0} md-link rows$( [ "${rows:-0}" -gt 5 ] && echo ' (index candidate)')"
+    done
+    echo
+    echo "## Non-markdown artifacts"
+    echo
+    total=$(find "$TARGET/$CORPUS" -type f ! -name '*.md' | wc -l)
+    echo "- $total files (audio/spreadsheets/exports/scripts). They stay OUT of the graph;"
+    echo "  nodes may cite them via plain relative links (kb-check validates existence)."
+    echo
+    echo "## Naming patterns (dated-prefix files)"
+    echo
+    dated=$(find "$TARGET/$CORPUS" -type f -name '20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' | wc -l)
+    echo "- $dated files start with a YYYY-MM-DD prefix."
+  } > "$RPT"
+  say "kb-init: toolkit installed; inventory written to $CORPUS/MIGRATION_REPORT.md (report only, no content changes)"
+  [ "$JSON" = 1 ] && printf '{"status":"ok","mode":"migrate","kb_dir":"%s","report":"%s/MIGRATION_REPORT.md"}\n' "$CORPUS" "$CORPUS"
+  ;;
+
+apply)
+  RPT="$TARGET/$ARG"
+  [ -f "$RPT" ] || { echo "kb-init: report not found: $ARG" >&2; exit 2; }
+  KB_DIR="$(dirname "$ARG")"
+  if [ -f "$TARGET/$KB_DIR/KB.md" ]; then
+    say "kb-init: KB.md already exists at $KB_DIR/ — nothing to apply mechanically"
+  else
+    {
+      echo "# Knowledge base — $(basename "$TARGET") (adopted corpus: $KB_DIR)"
+      echo
+      echo "## Themes"
+      echo
+      awk '/^- `/{gsub(/`/,""); sub(/^- /,""); split($0,a," — "); t=a[1]; sub(/\/$/,"",t); printf "- [%s/](%s/INDEX.md) — %s\n", t, t, a[2]}' "$RPT"
+      echo
+      echo "## Conventions"
+      echo
+      echo "- Adopted corpus: existing files keep their own conventions (see per-theme rules)."
+      echo "- New nodes follow kb-kit format: one node = one fact, frontmatter, [[links]]."
+    } > "$TARGET/$KB_DIR/KB.md"
+    say "kb-init: KB.md skeleton created at $KB_DIR/KB.md from report (only new file added)"
+  fi
+  [ "$JSON" = 1 ] && printf '{"status":"ok","mode":"apply","kb_dir":"%s"}\n' "$KB_DIR"
+  ;;
+
+pack)
+  echo "kb-init: pack install lands in v0.3 (Phase 8 / T025)" >&2
+  exit 2
+  ;;
+esac

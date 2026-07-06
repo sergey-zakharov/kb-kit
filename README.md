@@ -2,7 +2,9 @@
 
 **A knowledge base your AI agent can actually maintain. Just markdown, just git.**
 
-kb-kit turns a folder of markdown files into a disciplined knowledge graph that Claude Code (and other coding agents) can grow, query, and keep tidy — with no server, no database, no background processes. Nothing to deploy, nothing to break: if you have git and an agent, you already have everything.
+kb-kit turns a folder of markdown files into a disciplined knowledge graph that Claude Code (and other coding agents) can grow, query, and keep tidy — no server, no database, no background processes.
+
+The engine is deliberately **faceless**: nodes, indexes, links, and the discipline that keeps them honest. What your base *is* — a sales CRM, a product-discovery vault, a research library — is a **mask** it wears. Put on a kit-mask with one command and the same graph becomes a different tool; masks coexist on one base and swap without migration — your product insights and your sales pipeline live in the same graph and link to each other. Nothing to deploy, nothing to break: if you have git and an agent, you already have everything.
 
 ## The problem
 
@@ -82,12 +84,17 @@ v1 in active development, spec-driven (see `specs/`). First adopter: a real prod
 
 ## Masks
 
-The engine is deliberately faceless: nodes, indexes, links, discipline. What a
-base *is* — a CRM, a product-discovery vault, a research library — is a **mask**
-it wears: a **kit-mask** — node templates, theme rules, and hygiene invariants
-installed in one command (`kb-init --mask <name>`). Masks coexist on one base (your product knowledge and
-your sales pipeline share the same graph and link to each other), and a base
-can put on a new mask at any moment — no migration, no export, the same files.
+A **kit-mask** = node templates + theme rules + hygiene invariants, installed
+as one unit:
+
+```bash
+~/tools/kb-kit/kb-init.sh --mask sources    # built-in: source-library discipline
+```
+
+Putting on a mask materializes its themes (with indexes and rules) in your
+base; `/kb-add` starts honoring them immediately, and `/kb-check` enforces the
+mask's invariants. Taking the toolkit off (`--uninstall`) leaves all knowledge
+in place — themes stay as plain markdown.
 
 ## Roadmap
 

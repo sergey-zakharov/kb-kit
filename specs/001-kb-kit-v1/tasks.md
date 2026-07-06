@@ -40,8 +40,8 @@
 
 ## Phase 4: User Story 2 — Ask the base (P2)
 
-- [ ] T012 [US2] Author `adapters/claude/skills/kb-ask/SKILL.md` per skill-contracts.md: staged reading (root → theme indexes → selected bodies, ≤10% content), per-claim citations quoting supporting lines, disputed/superseded warnings from flags, honest can't-answer with nearest nodes. **ITERATIVE — product core: draft → benchmark run → revise**
-- [ ] T013 [US2] Benchmark `specs/001-kb-kit-v1/validation/ask-benchmark.md`: 10 questions spanning 2–3 nodes/themes over mini-kb + fresh-session run protocol; execute and record (SC-002, SC-008, SC-009)
+- [X] T012 [US2] Author `adapters/claude/skills/kb-ask/SKILL.md` per skill-contracts.md: staged reading (root → theme indexes → selected bodies, ≤10% content), per-claim citations quoting supporting lines, disputed/superseded warnings from flags, honest can't-answer with nearest nodes. **ITERATIVE — product core: draft → benchmark run → revise**
+- [X] T013 [US2] Benchmark `specs/001-kb-kit-v1/validation/ask-benchmark.md`: 10 questions spanning 2–3 nodes/themes over mini-kb + fresh-session run protocol; execute and record (SC-002, SC-008, SC-009)
 
 **Checkpoint**: MVP complete — add + ask deliver the core value loop
 

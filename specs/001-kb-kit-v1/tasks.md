@@ -68,8 +68,8 @@
 
 ## Phase 8: User Story 6 — Packs (P6)
 
-- [ ] T024 [P] [US6] Author built-in pack `core/packs/sources/`: pack.conf, rules.md (source-library discipline: file naming with dates, card structure with TL;DR + quotes with timecodes, evidence-citation format), templates/source-card.md, checks.conf (required frontmatter per type)
-- [ ] T025 [US6] Implement `kb-init.sh --pack <name|path>` with theme-slug collision handling (surface, never overwrite) + extend `tests/test_kb_init.sh`
+- [X] T024 [P] [US6] Author built-in pack `core/packs/sources/`: pack.conf, rules.md (source-library discipline: file naming with dates, card structure with TL;DR + quotes with timecodes, evidence-citation format), templates/source-card.md, checks.conf (required frontmatter per type)
+- [X] T025 [US6] Implement `kb-init.sh --pack <name|path>` with theme-slug collision handling (surface, never overwrite) + extend `tests/test_kb_init.sh`
 
 ## Phase 9: User Story 7 — Semantic audit (P7)
 

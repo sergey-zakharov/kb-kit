@@ -149,7 +149,38 @@ apply)
   ;;
 
 pack)
-  echo "kb-init: pack install lands in v0.3 (Phase 8 / T025)" >&2
-  exit 2
+  # resolve pack dir: explicit path > kb-kit built-ins > already-installed .kb/packs
+  if   [ -d "$ARG" ]; then PDIR="$ARG"
+  elif [ -d "$SRC_DIR/core/packs/$ARG" ]; then PDIR="$SRC_DIR/core/packs/$ARG"
+  elif [ -d "$TARGET/.kb/packs/$ARG" ]; then PDIR="$TARGET/.kb/packs/$ARG"
+  else echo "kb-init: pack not found: $ARG" >&2; exit 2; fi
+  [ -f "$PDIR/pack.conf" ] || { echo "kb-init: not a pack (pack.conf missing): $PDIR" >&2; exit 2; }
+  [ -f "$TARGET/.kb/config" ] || { echo "kb-init: install kb-kit first (no .kb/config)" >&2; exit 2; }
+  KB_DIR="$(awk -F= '$1=="KB_DIR"{print $2}' "$TARGET/.kb/config")"
+  PNAME="$(awk -F= '$1=="NAME"{print $2}' "$PDIR/pack.conf")"
+  PDESC="$(awk -F= '$1=="DESCRIPTION"{print $2}' "$PDIR/pack.conf")"
+  SLUG="$(awk -F= '$1=="THEME_SLUG"{print $2}' "$PDIR/pack.conf")"
+  [ -n "$SLUG" ] || { echo "kb-init: pack.conf has no THEME_SLUG" >&2; exit 2; }
+  THEME="$TARGET/$KB_DIR/$SLUG"
+  if [ -d "$THEME" ]; then
+    echo "kb-init: CONFLICT — theme '$SLUG' already exists at $KB_DIR/$SLUG/." >&2
+    echo "kb-init: nothing was changed. Options: rename the pack theme, merge manually, or abort." >&2
+    exit 1
+  fi
+  mkdir -p "$THEME" "$TARGET/.kb/packs/$PNAME"
+  cp -rf "$PDIR/." "$TARGET/.kb/packs/$PNAME/"
+  printf '# %s — index\n\n' "$SLUG" > "$THEME/INDEX.md"
+  awk -v rules="$PDIR/rules.md" -v slug="$SLUG" '
+    /\{\{rules\}\}/ { while ((getline l < rules) > 0) print l; next }
+    { gsub(/\{\{theme\}\}/, slug); print }
+  ' "$SRC_DIR/adapters/claude/theme-CLAUDE.md.tmpl" > "$THEME/CLAUDE.md" 2>/dev/null \
+    || cp "$PDIR/rules.md" "$THEME/CLAUDE.md"
+  if [ -f "$TARGET/$KB_DIR/KB.md" ] && ! grep -q "]($SLUG/INDEX.md)" "$TARGET/$KB_DIR/KB.md"; then
+    awk -v row="- [$SLUG/]($SLUG/INDEX.md) — $PDESC" '
+      { print } /^## Themes$/ { getline nl; print nl; print row }
+    ' "$TARGET/$KB_DIR/KB.md" > "$TARGET/$KB_DIR/KB.md.tmp" && mv "$TARGET/$KB_DIR/KB.md.tmp" "$TARGET/$KB_DIR/KB.md"
+  fi
+  say "kb-init: pack '$PNAME' installed — theme $KB_DIR/$SLUG/ (INDEX.md, CLAUDE.md), templates in .kb/packs/$PNAME/templates/"
+  [ "$JSON" = 1 ] && printf '{"status":"ok","mode":"pack","pack":"%s","theme":"%s/%s"}\n' "$PNAME" "$KB_DIR" "$SLUG"
   ;;
 esac

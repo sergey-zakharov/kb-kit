@@ -48,4 +48,17 @@ grep -q "KB_DIR=docs" "$TMP2/.kb/config" && ok "config points at corpus" || fail
 # 5. --json mode
 ( cd "$TMP" && "$ROOT/kb-init.sh" --update --json | grep -q '"status":"ok"' ) && ok "--json output" || fail "--json broken"
 
+# 6. --pack: install built-in pack, then collision on re-install
+( cd "$TMP" && "$ROOT/kb-init.sh" --pack sources >/dev/null 2>&1 )
+[ -f "$TMP/kb/sources/INDEX.md" ] && ok "pack theme INDEX.md created" || fail "pack theme missing"
+[ -f "$TMP/kb/sources/CLAUDE.md" ] && grep -q "one source material" "$TMP/kb/sources/CLAUDE.md" \
+  && ok "pack rules wrapped into theme CLAUDE.md" || fail "pack rules missing from CLAUDE.md"
+grep -q "](sources/INDEX.md)" "$TMP/kb/KB.md" && ok "KB.md gained pack theme row" || fail "KB.md row missing"
+[ -f "$TMP/.kb/packs/sources/templates/source-card.md" ] && ok "pack templates staged" || fail "pack templates missing"
+if ( cd "$TMP" && "$ROOT/kb-init.sh" --pack sources >/dev/null 2>&1 ); then
+  fail "re-install did not report collision"
+else
+  RC=$?; [ "$RC" -eq 1 ] && ok "collision surfaced (exit 1), nothing overwritten" || fail "collision wrong exit code: $RC"
+fi
+
 [ $FAIL -eq 0 ] && echo "test_kb_init: PASS" || { echo "test_kb_init: FAIL"; exit 1; }

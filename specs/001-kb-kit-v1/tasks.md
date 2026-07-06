@@ -14,19 +14,19 @@
 
 **Purpose**: Repo skeleton and test fixtures used by everything else
 
-- [ ] T001 Create source tree per plan.md: `core/templates/`, `core/packs/`, `core/scripts/`, `adapters/claude/skills/`, `tests/fixtures/`, `specs/001-kb-kit-v1/validation/`
-- [ ] T002 [P] Author clean fixture base in `tests/fixtures/mini-kb/`: KB.md, INBOX.md, 2 themes with INDEX.md + rules, ~8 nodes exercising every format feature (links, heading/block anchors, evidence citations with quotes+locators, tags, one artifact file referenced by plain link)
-- [ ] T003 [P] Author defective fixture in `tests/fixtures/mini-kb-defective/`: seeded broken link, broken anchor, broken file-ref, orphan node, index row without file, file without index row, unindexed theme, invalid frontmatter, mirrored flagged pair, blocked INBOX item (one of each, documented in fixture README)
+- [X] T001 Create source tree per plan.md: `core/templates/`, `core/packs/`, `core/scripts/`, `adapters/claude/skills/`, `tests/fixtures/`, `specs/001-kb-kit-v1/validation/`
+- [X] T002 [P] Author clean fixture base in `tests/fixtures/mini-kb/`: KB.md, INBOX.md, 2 themes with INDEX.md + rules, ~8 nodes exercising every format feature (links, heading/block anchors, evidence citations with quotes+locators, tags, one artifact file referenced by plain link)
+- [X] T003 [P] Author defective fixture in `tests/fixtures/mini-kb-defective/`: seeded broken link, broken anchor, broken file-ref, orphan node, index row without file, file without index row, unindexed theme, invalid frontmatter, mirrored flagged pair, blocked INBOX item (one of each, documented in fixture README)
 
 ## Phase 2: Foundational (blocking prerequisites)
 
 **Purpose**: Formats and deterministic parsing every story depends on
 
-- [ ] T004 [P] Core templates per data-model.md in `core/templates/`: node.md, INDEX.md, KB.md, INBOX.md, theme-rules.md
-- [ ] T005 Implement `core/scripts/kb-graph.sh`: flat frontmatter parser, `[[link]]`/anchor extraction, plain file-ref extraction, theme membership, adopted-mode nodes (frontmatter-less files, per data-model.md) → graph JSON (zero deps, <5s @ 1000 nodes)
-- [ ] T006 Golden test `tests/test_kb_graph.sh` over mini-kb (committed expected JSON; broken-flag assertions over mini-kb-defective)
-- [ ] T007 Implement `core/scripts/kb-check.sh`: all finding types per cli-contracts.md (broken-link, broken-anchor, broken-file-ref, orphan-node, index-missing-row, index-stale-row, unindexed-theme, frontmatter-invalid, flagged-node, inbox-blocked), `--json`, safe_fix marking, style-agnostic index parsing (bullet + table rows)
-- [ ] T008 Test `tests/test_kb_check.sh`: 100% detection of every seeded defect in mini-kb-defective (SC-006), zero findings on mini-kb
+- [X] T004 [P] Core templates per data-model.md in `core/templates/`: node.md, INDEX.md, KB.md, INBOX.md, theme-rules.md
+- [X] T005 Implement `core/scripts/kb-graph.sh`: flat frontmatter parser, `[[link]]`/anchor extraction, plain file-ref extraction, theme membership, adopted-mode nodes (frontmatter-less files, per data-model.md) → graph JSON (zero deps, <5s @ 1000 nodes)
+- [X] T006 Golden test `tests/test_kb_graph.sh` over mini-kb (committed expected JSON; broken-flag assertions over mini-kb-defective)
+- [X] T007 Implement `core/scripts/kb-check.sh`: all finding types per cli-contracts.md (broken-link, broken-anchor, broken-file-ref, orphan-node, index-missing-row, index-stale-row, unindexed-theme, frontmatter-invalid, flagged-node, inbox-blocked), `--json`, safe_fix marking, style-agnostic index parsing (bullet + table rows)
+- [X] T008 Test `tests/test_kb_check.sh`: 100% detection of every seeded defect in mini-kb-defective (SC-006), zero findings on mini-kb
 
 **Checkpoint**: mechanical layer trustworthy — all user stories can build on it
 

@@ -1,69 +1,61 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="420" viewBox="0 0 1600 420" role="img" aria-label="kb-kit — a knowledge graph wearing a mask">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="420" viewBox="0 0 1600 420" role="img" aria-label="kb-kit — the constellation that wears a mask">
   <defs>
     <clipPath id="r"><rect width="1600" height="420" rx="24"/></clipPath>
   </defs>
   <g clip-path="url(#r)">
     <rect width="1600" height="420" fill="#14161c"/>
-    <!-- faint background grid dots -->
-    <g fill="#232733">
-      <circle cx="120" cy="70" r="3"/><circle cx="300" cy="40" r="3"/><circle cx="520" cy="55" r="3"/>
-      <circle cx="80" cy="360" r="3"/><circle cx="260" cy="390" r="3"/><circle cx="700" cy="385" r="3"/>
-      <circle cx="920" cy="60" r="3"/><circle cx="960" cy="370" r="3"/><circle cx="1540" cy="380" r="3"/>
+
+    <!-- constellation: node positions trace a domino mask; you see it on the second glance -->
+    <g stroke="#2c3140" stroke-width="2" fill="none">
+      <path d="M235,175 L300,128"/>
+      <path d="M300,128 L400,112"/>
+      <path d="M400,112 L500,128"/>
+      <path d="M500,128 L565,175"/>
+      <path d="M235,175 L262,242"/>
+      <path d="M262,242 L400,272"/>
+      <path d="M400,272 L538,242"/>
+      <path d="M538,242 L565,175"/>
+      <path d="M330,196 L400,112"/>
+      <path d="M330,196 L262,242"/>
+      <path d="M470,196 L400,112"/>
+      <path d="M470,196 L538,242"/>
+      <path d="M330,196 L400,272"/>
+      <path d="M470,196 L400,272"/>
+      <!-- loose ends: the graph continues beyond the mask -->
+      <path d="M235,175 L152,150"/>
+      <path d="M565,175 L652,148"/>
+      <path d="M652,148 L718,190"/>
+      <path d="M152,150 L96,205"/>
     </g>
-    <!-- graph edges -->
-    <g stroke="#3c4356" stroke-width="2.5" fill="none">
-      <path d="M170,260 L330,150"/>
-      <path d="M170,260 L350,320"/>
-      <path d="M330,150 L560,185"/>
-      <path d="M350,320 L560,245"/>
-      <path d="M350,320 L590,345"/>
-      <path d="M330,150 L520,90"/>
-      <path d="M520,90 L742,168"/>
-      <path d="M560,185 L595,183"/>
-      <path d="M560,245 L620,228"/>
-      <path d="M590,345 L742,248"/>
-      <path d="M880,190 L942,140"/>
-      <path d="M880,222 L950,290"/>
-    </g>
-    <!-- graph nodes (files) -->
     <g>
-      <circle cx="170" cy="260" r="16" fill="#4cbfbf"/>
-      <circle cx="330" cy="150" r="20" fill="#70ad47"/>
-      <circle cx="350" cy="320" r="14" fill="#c65b8a"/>
-      <circle cx="520" cy="90"  r="12" fill="#8f7ee6"/>
-      <circle cx="590" cy="345" r="12" fill="#d5715b"/>
-      <circle cx="942" cy="140" r="11" fill="#a0a84c"/>
-      <circle cx="950" cy="290" r="13" fill="#5b9bd5"/>
+      <circle cx="300" cy="128" r="9"  fill="#5b9bd5" opacity="0.75"/>
+      <circle cx="400" cy="112" r="11" fill="#8f7ee6" opacity="0.75"/>
+      <circle cx="500" cy="128" r="9"  fill="#70ad47" opacity="0.75"/>
+      <circle cx="235" cy="175" r="8"  fill="#4cbfbf" opacity="0.75"/>
+      <circle cx="565" cy="175" r="8"  fill="#c65b8a" opacity="0.75"/>
+      <circle cx="262" cy="242" r="9"  fill="#70ad47" opacity="0.75"/>
+      <circle cx="400" cy="272" r="10" fill="#5b9bd5" opacity="0.75"/>
+      <circle cx="538" cy="242" r="9"  fill="#8f7ee6" opacity="0.75"/>
+      <circle cx="152" cy="150" r="6"  fill="#3c4356"/>
+      <circle cx="96"  cy="205" r="5"  fill="#3c4356"/>
+      <circle cx="652" cy="148" r="6"  fill="#3c4356"/>
+      <circle cx="718" cy="190" r="5"  fill="#3c4356"/>
+      <!-- the eyes: the only full-strength accents on the canvas -->
+      <circle cx="330" cy="196" r="15" fill="#e8a04c"/>
+      <circle cx="470" cy="196" r="15" fill="#e8a04c"/>
     </g>
-    <!-- the mask, worn by the graph: two nodes are its eyes -->
-    <path fill="#e8a04c" fill-rule="evenodd" d="
-      M560,196
-      C588,130 668,118 718,152
-      C736,164 760,164 778,152
-      C828,118 908,130 936,196
-      C950,232 932,272 886,284
-      C842,295 792,278 748,246
-      C704,278 654,295 610,284
-      C564,272 546,232 560,196
-      Z
-      M632,206 a44,30 0 1,0 88,0 a44,30 0 1,0 -88,0
-      M776,206 a44,30 0 1,0 88,0 a44,30 0 1,0 -88,0"/>
-    <!-- eyes = graph nodes seen through the mask -->
-    <circle cx="676" cy="206" r="17" fill="#5b9bd5"/>
-    <circle cx="820" cy="206" r="17" fill="#70ad47"/>
-    <!-- eye nodes connect back into the graph -->
-    <g stroke="#3c4356" stroke-width="2.5" fill="none">
-      <path d="M676,206 L620,228"/>
-      <path d="M820,206 L880,190"/>
-      <path d="M820,206 L880,222"/>
-      <path d="M676,206 L595,183"/>
-    </g>
-    <!-- wordmark -->
+
+    <!-- wordmark: the hyphen IS a graph edge -->
     <g font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
-      <text x="1080" y="185" font-size="92" font-weight="800" fill="#e8eaf0" letter-spacing="-2">kb-kit</text>
-      <text x="1084" y="238" font-size="27" fill="#aab0c0">A knowledge base your AI agent</text>
-      <text x="1084" y="274" font-size="27" fill="#aab0c0">can actually maintain.</text>
-      <text x="1084" y="330" font-size="20" fill="#5a6072" font-family="ui-monospace, 'SF Mono', Consolas, monospace">just markdown · just git · masks included</text>
+      <text x="950" y="212" font-size="112" font-weight="800" fill="#e8eaf0" letter-spacing="-3">kb</text>
+      <g>
+        <line x1="1102" y1="176" x2="1188" y2="176" stroke="#e8a04c" stroke-width="7"/>
+        <circle cx="1102" cy="176" r="12" fill="#e8a04c"/>
+        <circle cx="1188" cy="176" r="12" fill="#e8a04c"/>
+      </g>
+      <text x="1222" y="212" font-size="112" font-weight="800" fill="#e8eaf0" letter-spacing="-3">kit</text>
+      <text x="954" y="272" font-size="27" fill="#aab0c0">A knowledge base your AI agent can actually maintain.</text>
+      <text x="954" y="322" font-size="20" fill="#5a6072" font-family="ui-monospace, 'SF Mono', Consolas, monospace">just markdown · just git · masks included</text>
     </g>
   </g>
 </svg>

@@ -7,6 +7,7 @@
 #   kb-init.sh --migrate <corpus-dir>    install toolkit + write MIGRATION_REPORT.md (report only)
 #   kb-init.sh --apply-migration <rpt>   create KB.md skeleton from a reviewed report (adds files only)
 #   kb-init.sh --update                  refresh .kb/ and .claude/skills/ (never touches knowledge)
+#   kb-init.sh --uninstall               remove toolkit (.kb/, .claude/skills/kb-*); knowledge untouched
 #   kb-init.sh --pack <name|path>        install a pack (Phase 8)
 #   kb-init.sh --json                    machine-readable result
 # Exit: 0 ok, 1 findings/conflict, 2 usage/environment error.
@@ -26,6 +27,7 @@ while [ $# -gt 0 ]; do
     --migrate)         MODE="migrate"; ARG="${2:?}"; shift 2 ;;
     --apply-migration) MODE="apply"; ARG="${2:?}"; shift 2 ;;
     --update)          MODE="update"; shift ;;
+    --uninstall)       MODE="uninstall"; shift ;;
     --pack)            MODE="pack"; ARG="${2:?}"; shift 2 ;;
     --json)            JSON=1; shift ;;
     *) echo "kb-init: unknown option $1" >&2; exit 2 ;;
@@ -149,7 +151,21 @@ apply)
     } > "$TARGET/$KB_DIR/KB.md"
     say "kb-init: KB.md skeleton created at $KB_DIR/KB.md from report (only new file added)"
   fi
+  if [ ! -f "$TARGET/$KB_DIR/INBOX.md" ]; then
+    grep -v '{{raw item}}' "$SRC_DIR/core/templates/INBOX.md" > "$TARGET/$KB_DIR/INBOX.md"
+    say "kb-init: INBOX.md created at $KB_DIR/INBOX.md"
+  fi
   if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"apply","kb_dir":"%s"}\n' "$KB_DIR"; fi
+  ;;
+
+uninstall)
+  [ -f "$TARGET/.kb/config" ] || { echo "kb-init: nothing to uninstall (.kb/config missing)" >&2; exit 2; }
+  KB_DIR="$(awk -F= '$1=="KB_DIR"{print $2}' "$TARGET/.kb/config")"
+  rm -rf "$TARGET/.kb"
+  for s in kb-add kb-ask kb-audit kb-check kb-init kb-viz; do rm -rf "$TARGET/.claude/skills/$s"; done
+  rmdir "$TARGET/.claude/skills" "$TARGET/.claude" 2>/dev/null || true
+  say "kb-init: toolkit removed (.kb/, .claude/skills/kb-*). Your knowledge at $KB_DIR/ is UNTOUCHED."
+  if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"uninstall","kb_dir":"%s"}\n' "$KB_DIR"; fi
   ;;
 
 pack)

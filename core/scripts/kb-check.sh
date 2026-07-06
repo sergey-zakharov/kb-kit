@@ -56,6 +56,8 @@ GRAPH="$SELF_DIR/kb-graph.sh"
     if ($3 == "1" && $5 == "0" && $2 != "") timiss[++tic] = $2
   }
   $1 == "INBOX" { if ($2 == "blocked") { bc++; btext[bc] = $3 } }
+  $1 == "COLLIDE" { clc++; clid[clc] = $2; clfirst[clc] = $3; cldup[clc] = $4 }
+  $1 == "EXTBASE" { if ($4 == "0") { ebc++; ebname[ebc] = $2; ebpath[ebc] = $3 } }
   END {
     for (i = 1; i <= ec; i++) {
       if (!ebroken[i]) continue
@@ -84,6 +86,10 @@ GRAPH="$SELF_DIR/kb-graph.sh"
       addf("unindexed-theme", tmiss[i], "theme directory not listed in KB.md", "")
     for (i = 1; i <= tic; i++)
       addf("theme-index-missing", timiss[i], "KB.md lists this theme but its INDEX.md does not exist yet — generate it (planned theme) or fix the KB.md row", "")
+    for (i = 1; i <= clc; i++)
+      addf("slug-collision", cldup[i], "slug \"" clid[i] "\" is already taken by " clfirst[i] " — all [[" clid[i] "]] links resolve THERE; rename one of the files", "")
+    for (i = 1; i <= ebc; i++)
+      addf("external-base-unreachable", ebname[i], "configured external base not found at " ebpath[i] " on this machine — its links are left unvalidated (soft)", "")
     for (i = 1; i <= bc; i++)
       addf("inbox-blocked", "INBOX.md", "item awaiting user: " btext[i], "")
 

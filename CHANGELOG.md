@@ -2,7 +2,27 @@
 
 All notable changes to kb-kit. Public from the first commit — that's the point.
 
-## [Unreleased → v0.1]
+## v0.1.0 — 2026-07-06
+
+Hardened by two live-corpus shakedowns on top of the rc line:
+
+- **Memory bridge**: `EXTERNAL_BASE_<name>` config — unresolved `[[slug]]` links
+  resolve into external bases (e.g. the agent's auto-memory); explicit
+  `[[name:slug]]` syntax; soft `external-base-unreachable` finding; external
+  links are read-only for /kb-ask and excluded from viz. Live effect on a real
+  CRM corpus: 191 → 49 broken links (142 resolved into a 130-node memory base).
+- **New findings**: `slug-collision` (duplicate basenames no longer lie
+  silently), `theme-index-missing` (planned themes named instead of noise).
+- **Scope & parsing hardening**: default base from `.kb/config` (no accidental
+  cwd scans), git-first file enumeration (respects .gitignore), fenced code
+  blocks and inline code spans excluded from parsing, slug-shaped wikilink
+  validation, `#fragment` stripped from fileref checks, non-ASCII filenames
+  (git quotepath) fixed.
+- **Installer**: `--uninstall` (toolkit out, knowledge untouched), `--update`
+  preserves custom config lines, version stamped from `git describe`,
+  `--apply-migration` scaffolds INBOX.md; LF enforced via `.gitattributes`.
+
+## v1 baseline
 
 First working version. The engine:
 

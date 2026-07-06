@@ -39,7 +39,8 @@ Related: [[saturday-peak]], [[rush-fee-policy]]
 
 ## Link
 
-- `[[name]]` — reference to a node by slug (resolved within the base).
+- `[[name]]` — reference to a node by slug (resolved within the base; unresolved slugs fall back to configured external bases — see cli-contracts).
+- `[[base:name]]` — explicit reference into a named external base (`EXTERNAL_BASE_<base>` in `.kb/config`), e.g. `[[mem:standing-preference]]` into the agent's auto-memory. Read-only.
 - `[[name#Heading]]` — anchored to a markdown heading inside the node.
 - `[[name#^block-id]]` — anchored to an explicit block anchor: a line ending with ` ^block-id`.
 - **Evidence citation** — link + verbatim quote + locator on one line: `[[source#^id]]: "quote" (locator)`. The quote makes the citation grep-verifiable even if the anchor moves.

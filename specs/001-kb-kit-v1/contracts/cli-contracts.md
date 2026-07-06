@@ -9,7 +9,8 @@ kb-init.sh [--dir <path>]            # scaffold new base (default: kb/)
            --migrate <corpus-dir>    # phase A: inventory existing corpus → MIGRATION_REPORT.md
            --apply-migration <report># phase B apply (invoked by /kb-init skill after confirmation)
            --pack <name|path>        # install a pack into the base
-           --update                  # refresh .kb/scripts+templates and .claude/skills only
+           --update                  # refresh .kb/scripts+templates and .claude/skills only (preserves custom config lines)
+           --uninstall               # remove .kb/ and .claude/skills/kb-*; knowledge (KB_DIR) untouched
            --json
 ```
 
@@ -29,7 +30,9 @@ Parses all nodes: frontmatter (flat), `[[links]]` incl. anchors, theme membershi
 kb-check.sh [--base <dir>] [--json]
 ```
 
-Finding types (each with file, location, details): `broken-link`, `broken-anchor`, `broken-file-ref` (plain relative link to a non-existent artifact file, e.g. audio/spreadsheet cited by a node), `orphan-node` (no incoming links AND not indexed), `index-missing-row` (file on disk, no index reference), `index-stale-row` (reference without file), `unindexed-theme` (dir absent from KB.md), `theme-index-missing` (KB.md lists a theme whose INDEX.md does not exist yet — planned/unmigrated theme), `frontmatter-invalid`, `flagged-node` (open consistency marks), `inbox-blocked` (items awaiting user).
+Finding types (each with file, location, details): `broken-link`, `broken-anchor`, `broken-file-ref` (plain relative link to a non-existent artifact file; `#fragment` is stripped before the existence check), `orphan-node` (no incoming links AND not indexed), `index-missing-row` (file on disk, no index reference), `index-stale-row` (reference without file), `unindexed-theme` (dir absent from KB.md), `theme-index-missing` (KB.md lists a theme whose INDEX.md does not exist yet — planned/unmigrated theme), `frontmatter-invalid`, `flagged-node` (open consistency marks), `inbox-blocked` (items awaiting user), `slug-collision` (duplicate basename across the base: the slug binds to the first file in sorted order, all links resolve there — rename one), `external-base-unreachable` (soft: a configured external base is missing on this machine; its links are left unvalidated).
+
+**External bases (memory bridge)**: `EXTERNAL_BASE_<name>=<abs-path>` lines in `.kb/config` (env override `KB_EXTERNAL_BASES="name=path;…"`). Resolution order for `[[slug]]`: local base → each external base (flat `<path>/<slug>.md`); resolved links get `kind=external`, are never drawn in viz, and are read-only for skills. Explicit form `[[name:slug]]` targets one named base: missing file there → broken; unreachable base → unvalidated (soft finding); unknown name → broken.
 
 **Base resolution & enumeration** (kb-graph/kb-check/kb-viz): with no `--base`, KB_DIR is read from `./.kb/config` (never an accidental whole-cwd scan). Files are enumerated git-first (`git ls-files --cached --others --exclude-standard` — respects .gitignore, so venvs/build dirs stay out; sees new not-yet-committed nodes), falling back to `find` with a prune list for non-git or gitignored bases. Fenced code blocks are excluded from link/anchor/fileref parsing, and wikilink targets must be slug-shaped (kills `[[:<:]]`-style regex noise). JSON schema: `{"findings": [{"type": "...", "file": "...", "detail": "...", "safe_fix": "add-index-row|null"}]}`. Only `safe_fix` entries may be auto-applied by the skill; everything else is propose-only.
 

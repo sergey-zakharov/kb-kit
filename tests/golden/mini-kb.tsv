@@ -9,6 +9,7 @@ EDGE	roadmap-digest	walk-in-slots		link	0
 EDGE	self-repair-guide	2026-03-24-video-courier		link	0
 EDGE	self-repair-guide	walk-in-slots	Motivation	anchor	0
 EDGE	walk-in-slots	repair-ceiling		link	0
+FILEREF	product/roadmap-digest.md	../sources/2026-03-24-video-courier.md	1
 FILEREF	sources/2026-01-15-podcast-mechanic.md	2026-01-15-call.mp3	1
 INDEXROW	product/INDEX.md	product/repair-ceiling.md	1	same-day repair ceiling caps the shop near 12 bikes
 INDEXROW	product/INDEX.md	product/roadmap-digest.md	1	digest of current product bets with evidence links

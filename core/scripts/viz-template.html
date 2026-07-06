@@ -159,8 +159,10 @@ cv.addEventListener("wheel", e => {
 const q = document.getElementById("q");
 q.addEventListener("input", () => { query = q.value.toLowerCase().trim(); draw(); });
 
+const extCount = DATA.edges.filter(e => e.external && !e.broken).length;
 document.getElementById("counts").textContent =
-  `${nodes.length} nodes · ${edges.length} links` +
+  `${nodes.length} nodes · ${edges.filter(e=>!e.external).length} links` +
+  (extCount ? ` · ${extCount} → external bases (not drawn)` : "") +
   (brokenEdges.length ? ` · ${brokenEdges.length} broken` : "") +
   (nodes.some(n=>n.adopted) ? ` · dashed = adopted` : "");
 document.getElementById("legend").innerHTML =

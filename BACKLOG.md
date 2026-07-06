@@ -25,10 +25,8 @@ or alongside feature 002.
 - **Feature 002: product-development pack** (flagship vertical: CX/customer
   journey, PM best practices for new and existing products) — decided, next
   spec after v0.1 launch.
-- ~~Memory bridge resolution~~ — SHIPPED in v0.1.0-rc4: `EXTERNAL_BASE_<name>=<path>` in `.kb/config`, unresolved `[[slug]]` links resolve against external bases (kind=external). Remaining from the bridge design: explicit `[[mem:slug]]` prefix syntax, `external-base-unreachable` soft finding, /kb-ask read-only follow, viz exclusion — v1.1.
-- `](file.md#anchor)` filerefs: strip anchor before existence check (minor
-  parser fix, noted in corpus validation №1).
-- Inline code spans (single backticks) are not yet excluded from link parsing
-  (fenced blocks are); revisit if real noise appears.
+- ~~Memory bridge~~ — SHIPPED in v0.1.0 полностью: EXTERNAL_BASE_* resolution, explicit [[name:slug]], external-base-unreachable soft finding, read-only follow in kb-ask, viz exclusion.
+- ~~fileref #anchor strip~~ — SHIPPED in v0.1.0.
+- ~~Inline code spans~~ — SHIPPED in v0.1.0 (excluded from link/fileref parsing).
 - Registry / community packs; Codex adapter (AGENTS.md); embeddings as derived
   cache — per roadmap.

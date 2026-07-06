@@ -41,10 +41,19 @@ BASE="${BASE%/}"
 # each external base (flat <path>/<slug>.md) before being declared broken.
 # Config: EXTERNAL_BASE_<name>=<abs-path> lines in ./.kb/config;
 # override for tests/tooling: KB_EXTERNAL_BASES="name=path;name=path".
-EXT="${KB_EXTERNAL_BASES:-}"
-if [ -z "$EXT" ] && [ -f .kb/config ]; then
-  EXT="$(awk -F= '/^EXTERNAL_BASE_/{n=$1; sub(/^EXTERNAL_BASE_/,"",n); printf "%s=%s;", n, $2}' .kb/config)"
+EXT_RAW="${KB_EXTERNAL_BASES:-}"
+if [ -z "$EXT_RAW" ] && [ -f .kb/config ]; then
+  EXT_RAW="$(awk -F= '/^EXTERNAL_BASE_/{n=$1; sub(/^EXTERNAL_BASE_/,"",n); printf "%s=%s;", n, $2}' .kb/config)"
 fi
+# split into reachable (usable for resolution) and unreachable (soft-reported)
+EXT=""; EXTU=""
+OLDIFS="$IFS"; IFS=';'
+for pair in $EXT_RAW; do
+  [ -n "$pair" ] || continue
+  p="${pair#*=}"
+  if [ -d "$p" ]; then EXT="$EXT$pair;"; else EXTU="$EXTU$pair;"; fi
+done
+IFS="$OLDIFS"
 
 emit_tsv() {
   # File enumeration: git-first (respects .gitignore incl. venvs/build dirs,
@@ -60,7 +69,7 @@ emit_tsv() {
          -o -type f -name '*.md' -print | LC_ALL=C sort)"
   fi
   [ -n "$files" ] || return 0
-  printf '%s\n' "$files" | tr '\n' '\0' | xargs -0 env LC_ALL=C awk -v BASE="$BASE" -v EXT="$EXT" '
+  printf '%s\n' "$files" | tr '\n' '\0' | xargs -0 env LC_ALL=C awk -v BASE="$BASE" -v EXT="$EXT" -v EXTU="$EXTU" '
   function relpath(p,  b) {
     b = BASE
     if (index(p, b "/") == 1) return substr(p, length(b) + 2)
@@ -87,8 +96,9 @@ emit_tsv() {
       if (h > 0) { anc = substr(inner, h + 1); inner = substr(inner, 1, h - 1) }
       pi = index(inner, "|"); if (pi > 0) inner = substr(inner, 1, pi - 1)
       inner = trim(inner); anc = trim(anc)
-      # slugs only: kills regex/POSIX-class noise like [[:<:]] from code samples
-      if (inner !~ /^[A-Za-z0-9][A-Za-z0-9._-]*$/) continue
+      # slugs only (plus optional external-base prefix "name:slug");
+      # kills regex/POSIX-class noise like [[:<:]] from code samples
+      if (inner !~ /^[A-Za-z0-9][A-Za-z0-9._-]*(:[A-Za-z0-9][A-Za-z0-9._-]*)?$/) continue
       ec++; efrom[ec] = id; eto[ec] = inner; eanc[ec] = anc
     }
   }
@@ -99,6 +109,8 @@ emit_tsv() {
       cl = index(rest, ")"); if (cl == 0) break
       p = substr(rest, 1, cl - 1); rest = substr(rest, cl + 1)
       if (p == "" || p ~ /^#/ || index(p, "://") > 0 || p ~ /^mailto:/) continue
+      h = index(p, "#"); if (h > 0) p = substr(p, 1, h - 1)   # strip fragment before existence check
+      if (p == "") continue
       fc++; ffrom[fc] = fromrel; fpath[fc] = p; fdir[fc] = fromdir
     }
   }
@@ -116,16 +128,24 @@ emit_tsv() {
     isnode  = !(isindex || iskb || isinbox || isres)
     if (isnode) {
       nid = fname; sub(/\.md$/, "", nid)
-      nc++; norder[nc] = nid
-      nrel[nid] = rel; ntheme[nid] = theme
-      nname[nid] = ""; ndesc[nid] = ""; ntype[nid] = ""; ntags[nid] = ""; nflags[nid] = ""
-      adopted[nid] = 1; infm = 0; fmwas = 0; infence = 0
-      if (theme != "") themenodes[theme] = 1
+      skipnode = 0
+      if (nid in nrel) {
+        # duplicate basename: first (sorted) file keeps the slug; report collision
+        cc++; colid[cc] = nid; colfirst[cc] = nrel[nid]; coldup[cc] = rel
+        skipnode = 1
+      } else {
+        nc++; norder[nc] = nid
+        nrel[nid] = rel; ntheme[nid] = theme
+        nname[nid] = ""; ndesc[nid] = ""; ntype[nid] = ""; ntags[nid] = ""; nflags[nid] = ""
+        adopted[nid] = 1; infm = 0; fmwas = 0; infence = 0
+        if (theme != "") themenodes[theme] = 1
+      }
     }
   }
   {
     line = $0; sub(/\r$/, "", line)
     if (isnode) {
+      if (skipnode) next
       if (FNR == 1 && line == "---") { infm = 1; fmwas = 1; adopted[nid] = 0; next }
       if (infm) {
         if (line == "---") { infm = 0; next }
@@ -147,8 +167,9 @@ emit_tsv() {
       if (line ~ /(^|[ \t])\^[A-Za-z0-9_-]+[ \t]*$/) {
         b = line; sub(/^.*\^/, "^", b); b = trim(b); blocks[nid "\t" b] = 1
       }
-      scanlinks(line, nid)
-      scanfilerefs(line, rel, dir)
+      scanline = line; gsub(/`[^`]+`/, "", scanline)   # inline code spans are not links
+      scanlinks(scanline, nid)
+      scanfilerefs(scanline, rel, dir)
     } else if (isindex) {
       if (index(line, "](") > 0) {
         i = index(line, "]("); rest = substr(line, i + 2)
@@ -193,18 +214,33 @@ emit_tsv() {
       }
       printf "NODE\t%s\t%s\t%s\t%d\t%d\t%s\t%s\t%s\t%s\t%s\n", id, ntheme[id], nrel[id], adopted[id], fmvalid, prob, ntype[id], nflags[id], ntags[id], ndesc[id]
     }
-    # external bases: name=path pairs
+    # external bases: reachable name=path pairs (EXT) and unreachable (EXTU)
     extn = split(EXT, extp, ";")
     for (i = 1; i <= extn; i++) {
       p = index(extp[i], "=")
-      if (p > 0) extpath[++extc] = substr(extp[i], p + 1)
+      if (p > 0) { n = substr(extp[i], 1, p - 1); extc++; extpath[extc] = substr(extp[i], p + 1); extbyname[n] = extpath[extc]; extname[extc] = n }
+    }
+    extun = split(EXTU, extup, ";")
+    for (i = 1; i <= extun; i++) {
+      p = index(extup[i], "=")
+      if (p > 0) extmissing[substr(extup[i], 1, p - 1)] = substr(extup[i], p + 1)
     }
     # EDGE records
     for (i = 1; i <= ec; i++) {
       to = eto[i]; anc = eanc[i]
       kind = (anc == "" ? "link" : "anchor")
       broken = 0
-      if (!(to in nrel)) {
+      ci = index(to, ":")
+      if (ci > 0) {
+        # explicit external link [[name:slug]]
+        en = substr(to, 1, ci - 1); es = substr(to, ci + 1)
+        kind = "external"
+        if (en in extbyname) {
+          if (system("test -f '\''" extbyname[en] "/" es ".md'\''") != 0) broken = 1
+        } else if (en in extmissing) broken = 0   # unverifiable; soft EXTBASE finding covers it
+        else broken = 1                            # unknown base name
+      }
+      else if (!(to in nrel)) {
         broken = 1; kind = "link"
         if (!(to in extseen)) {
           extfound[to] = 0
@@ -237,6 +273,11 @@ emit_tsv() {
       printf "THEME\t%s\t1\t%d\t%d\n", t, (t in themenodes) ? 1 : 0, ((t "/INDEX.md") in allmd) ? 1 : 0
     # INBOX records
     for (i = 1; i <= bc; i++) printf "INBOX\tblocked\t%s\n", btext[i]
+    # COLLIDE records: duplicate basenames (slug bound to the first sorted file)
+    for (i = 1; i <= cc; i++) printf "COLLIDE\t%s\t%s\t%s\n", colid[i], colfirst[i], coldup[i]
+    # EXTBASE records: configured external bases and their reachability
+    for (i = 1; i <= extc; i++) printf "EXTBASE\t%s\t%s\t1\n", extname[i], extpath[i]
+    for (n in extmissing)       printf "EXTBASE\t%s\t%s\t0\n", n, extmissing[n]
   }
   ' | LC_ALL=C sort
 }

@@ -32,9 +32,16 @@ expect flagged-node         product/repair-ceiling.md
 expect flagged-node         product/walk-in-slots.md
 expect inbox-blocked        INBOX.md
 expect theme-index-missing  ghost
+expect slug-collision       sources/walk-in-slots.md
 
 N=$(echo "$JOUT" | grep -c '"type":')
-[ "$N" -eq 11 ] && ok "exactly 11 findings" || fail "expected 11 findings, got $N"
+[ "$N" -eq 12 ] && ok "exactly 12 findings" || fail "expected 12 findings, got $N"
+
+# external bases: soft unreachable finding + clean resolution
+EOUT=$(KB_EXTERNAL_BASES="mem=tests/fixtures/ext-mem;gone=/nonexistent-xyz" $CHECK --base tests/fixtures/mini-kb-ext --json)
+echo "$EOUT" | grep -q '"type": "external-base-unreachable", "file": "gone"' && ok "unreachable base soft finding" || fail "unreachable finding missing"
+echo "$EOUT" | grep -q '"type": "broken-link", "file": "notes/uses-prefix.md"' && ok "unknown-prefix link broken" || fail "unknown prefix not flagged"
+echo "$EOUT" | grep -q 'mem-note' && fail "resolved external link wrongly flagged" || ok "resolved external links clean"
 
 # 3. Exemptions and precedence
 echo "$JOUT" | grep -q '"file": "product/old-queue.md"' && fail "adopted node wrongly flagged" || ok "adopted node exempt"

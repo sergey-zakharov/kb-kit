@@ -21,6 +21,11 @@ you read indexes first and open only the node bodies you actually need.
 4. **Warn on flagged nodes**: if a cited node's frontmatter has
    `flags: disputed=<slug>` or `superseded-by=<slug>`, prepend a warning naming
    the counterpart node before using it.
+5. **External links are read-only**: a link that resolves into an external base
+   (`EXTERNAL_BASE_<name>` in `.kb/config`, or explicit `[[name:slug]]`) MAY be
+   followed to read evidence; cite it as `name:slug (external base)`. NEVER
+   write to an external base. If the base is unreachable on this machine, say
+   so instead of guessing its content.
 
 ## Procedure
 

@@ -44,6 +44,8 @@ CHANGED=$(cd "$TMP2" && git status --porcelain -- docs | grep -v 'MIGRATION_REPO
 [ -f "$TMP2/docs/MIGRATION_REPORT.md" ] && ok "migration report written" || fail "report missing"
 grep -q "product/" "$TMP2/docs/MIGRATION_REPORT.md" && ok "report lists candidate themes" || fail "themes not in report"
 grep -q "KB_DIR=docs" "$TMP2/.kb/config" && ok "config points at corpus" || fail "config KB_DIR wrong"
+( cd "$TMP2" && "$ROOT/kb-init.sh" --apply-migration docs/MIGRATION_REPORT.md >/dev/null )
+[ -f "$TMP2/docs/KB.md" ] && [ -f "$TMP2/docs/INBOX.md" ] && ok "apply-migration creates KB.md + INBOX.md" || fail "apply-migration artifacts missing"
 
 # 4b. --update preserves custom config lines (external bases etc.)
 echo "EXTERNAL_BASE_mem=/tmp/somewhere" >> "$TMP/.kb/config"
@@ -66,5 +68,11 @@ if ( cd "$TMP" && "$ROOT/kb-init.sh" --pack sources >/dev/null 2>&1 ); then
 else
   RC=$?; [ "$RC" -eq 1 ] && ok "collision surfaced (exit 1), nothing overwritten" || fail "collision wrong exit code: $RC"
 fi
+
+# 7. --uninstall removes toolkit only, knowledge untouched
+( cd "$TMP" && "$ROOT/kb-init.sh" --uninstall >/dev/null )
+[ ! -d "$TMP/.kb" ] && ok "--uninstall removed .kb/" || fail ".kb/ survived uninstall"
+[ ! -d "$TMP/.claude/skills/kb-add" ] && ok "--uninstall removed kb-* skills" || fail "skills survived"
+[ -f "$TMP/kb/KB.md" ] && grep -q "user content marker" "$TMP/kb/KB.md" && ok "--uninstall left knowledge untouched" || fail "uninstall touched knowledge"
 
 [ $FAIL -eq 0 ] && echo "test_kb_init: PASS" || { echo "test_kb_init: FAIL"; exit 1; }

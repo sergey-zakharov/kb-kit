@@ -41,6 +41,13 @@ KB_EXTERNAL_BASES="mem=tests/fixtures/ext-mem" $GRAPH --base tests/fixtures/mini
   && ok "ext link resolves via external base" || fail "external resolution failed"
 KB_EXTERNAL_BASES="mem=tests/fixtures/ext-mem" $GRAPH --base tests/fixtures/mini-kb-ext | grep -q '"external":true' \
   && ok "JSON carries external flag" || fail "JSON external flag missing"
+KB_EXTERNAL_BASES="mem=tests/fixtures/ext-mem" $GRAPH --base tests/fixtures/mini-kb-ext --tsv | grep -q "^EDGE	uses-prefix	mem:mem-note		external	0$" \
+  && ok "explicit [[mem:slug]] resolves" || fail "prefixed external link failed"
+$GRAPH --base tests/fixtures/mini-kb-defective --tsv | grep -q "^COLLIDE	walk-in-slots	product/walk-in-slots.md	sources/walk-in-slots.md$" \
+  && ok "slug collision recorded (first sorted wins)" || fail "COLLIDE record missing"
+echo "$TSV" | grep -q "fake-slug-in-code" && fail "inline code span parsed as link" || ok "inline code spans ignored"
+echo "$TSV" | grep -q "^FILEREF	product/roadmap-digest.md	../sources/2026-03-24-video-courier.md	1$" \
+  && ok "fileref fragment stripped before existence check" || fail "anchor fileref handling wrong"
 
 # 4. JSON mode: structurally sane
 J=$($GRAPH --base tests/fixtures/mini-kb)

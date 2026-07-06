@@ -57,8 +57,8 @@
 
 ## Phase 6: User Story 4 — Hygiene (P4)
 
-- [ ] T019 [US4] Author `adapters/claude/skills/kb-check/SKILL.md`: run `kb-check.sh --json`, auto-apply safe_fix findings with per-fix listing, propose destructive resolutions with evidence, clean-bill behavior with zero writes
-- [ ] T020 [US4] Validation on a copy of mini-kb-defective: safe fixes applied, destructive only proposed; record in `specs/001-kb-kit-v1/validation/us4.md`
+- [X] T019 [US4] Author `adapters/claude/skills/kb-check/SKILL.md`: run `kb-check.sh --json`, auto-apply safe_fix findings with per-fix listing, propose destructive resolutions with evidence, clean-bill behavior with zero writes
+- [X] T020 [US4] Validation on a copy of mini-kb-defective: safe fixes applied, destructive only proposed; record in `specs/001-kb-kit-v1/validation/us4.md`
 
 ## Phase 7: User Story 5 — Visualize (P5)
 

@@ -123,6 +123,10 @@ Stored in node frontmatter `flags` as flat pairs, always mirrored on both nodes 
 
 Machine-findable by grep; `/kb-ask` must warn when citing a node with `disputed=`/`superseded-by=`; `/kb-check` lists all flagged nodes as open items.
 
+## Adopted nodes (migrated corpora)
+
+A pre-existing corpus markdown file **without kb-kit frontmatter** is an **adopted node**: it participates in the graph and retrieval in degraded mode — identity = filename slug, description = its index-row hook (when an adopted index references it), type = `adopted`, no tags/flags. `kb-graph.sh` emits it with `"adopted": true`; `kb-check` exempts it from `frontmatter-invalid`; `/kb-viz` renders it visually distinct. An adopted node is upgraded to a full node the first time `/kb-add` touches it (frontmatter added then — the only permitted edit of an adopted file, with confirmation per migration rules). Non-markdown artifacts remain outside the graph entirely (citable via plain links only).
+
 ## Config (installed base)
 
 `.kb/config`, flat KEY=VALUE: `KB_DIR=kb` (or adopted docs path), `KB_KIT_VERSION=…`. No other persistent state exists outside markdown + git.
@@ -133,7 +137,7 @@ Output of `kb-graph.sh` (input to viz and audit candidate selection); never comm
 
 ```json
 {
-  "nodes": [{"id": "slug", "theme": "dir", "description": "...", "type": "fact", "tags": ["a"], "flags": {"disputed": "other"}}],
+  "nodes": [{"id": "slug", "theme": "dir", "description": "...", "type": "fact", "tags": ["a"], "flags": {"disputed": "other"}, "adopted": false}],
   "edges": [{"from": "slug", "to": "slug", "anchor": "^q3|heading|null", "broken": false}]
 }
 ```

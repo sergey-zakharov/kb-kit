@@ -23,7 +23,7 @@
 **Purpose**: Formats and deterministic parsing every story depends on
 
 - [ ] T004 [P] Core templates per data-model.md in `core/templates/`: node.md, INDEX.md, KB.md, INBOX.md, theme-rules.md
-- [ ] T005 Implement `core/scripts/kb-graph.sh`: flat frontmatter parser, `[[link]]`/anchor extraction, plain file-ref extraction, theme membership → graph JSON per data-model.md (zero deps, <5s @ 1000 nodes)
+- [ ] T005 Implement `core/scripts/kb-graph.sh`: flat frontmatter parser, `[[link]]`/anchor extraction, plain file-ref extraction, theme membership, adopted-mode nodes (frontmatter-less files, per data-model.md) → graph JSON (zero deps, <5s @ 1000 nodes)
 - [ ] T006 Golden test `tests/test_kb_graph.sh` over mini-kb (committed expected JSON; broken-flag assertions over mini-kb-defective)
 - [ ] T007 Implement `core/scripts/kb-check.sh`: all finding types per cli-contracts.md (broken-link, broken-anchor, broken-file-ref, orphan-node, index-missing-row, index-stale-row, unindexed-theme, frontmatter-invalid, flagged-node, inbox-blocked), `--json`, safe_fix marking, style-agnostic index parsing (bullet + table rows)
 - [ ] T008 Test `tests/test_kb_check.sh`: 100% detection of every seeded defect in mini-kb-defective (SC-006), zero findings on mini-kb
@@ -32,7 +32,7 @@
 
 ## Phase 3: User Story 1 — File a fact with one command (P1) 🎯 MVP
 
-- [ ] T009 [US1] Author `adapters/claude/skills/kb-add/SKILL.md` per skill-contracts.md: staged classification (KB.md → theme index → rules), ask-don't-guess on ambiguity, FR-006 conflict policy (complement=apply, contradiction=quote both & wait), multi-fact split with veto, evidence-citation authoring (link+quote+locator), INBOX queue processing with status updates, `--from-session` mode with confirmation list (FR-016), same-operation index update, full touched-files report
+- [ ] T009 [US1] Author `adapters/claude/skills/kb-add/SKILL.md` per skill-contracts.md: staged classification (KB.md → theme index → rules), ask-don't-guess on ambiguity, FR-006 conflict policy (complement=apply, contradiction=quote both & wait), multi-fact split with veto, evidence-citation authoring (link+quote+locator), INBOX queue processing with status updates, `--from-session` mode with confirmation list (FR-016), same-operation index update, full touched-files report. **ITERATIVE — product core: draft → fixture run → revise, expect multiple passes**
 - [ ] T010 [P] [US1] Second-opinion hook: protocol doc + example script `core/templates/hooks/second-opinion.example` (stdin JSON → stdout opinion, per cli-contracts.md); invocation + absent-silent behavior wired into kb-add SKILL.md
 - [ ] T011 [US1] Validation run on a copy of mini-kb: 5 varied raw inputs (clear fact, two-theme ambiguity, contradiction, multi-fact transcript, INBOX batch) → record vs acceptance scenarios in `specs/001-kb-kit-v1/validation/us1.md`; then `kb-check.sh` must report clean (SC-001, SC-005 rehearsal)
 
@@ -40,7 +40,7 @@
 
 ## Phase 4: User Story 2 — Ask the base (P2)
 
-- [ ] T012 [US2] Author `adapters/claude/skills/kb-ask/SKILL.md` per skill-contracts.md: staged reading (root → theme indexes → selected bodies, ≤10% content), per-claim citations quoting supporting lines, disputed/superseded warnings from flags, honest can't-answer with nearest nodes
+- [ ] T012 [US2] Author `adapters/claude/skills/kb-ask/SKILL.md` per skill-contracts.md: staged reading (root → theme indexes → selected bodies, ≤10% content), per-claim citations quoting supporting lines, disputed/superseded warnings from flags, honest can't-answer with nearest nodes. **ITERATIVE — product core: draft → benchmark run → revise**
 - [ ] T013 [US2] Benchmark `specs/001-kb-kit-v1/validation/ask-benchmark.md`: 10 questions spanning 2–3 nodes/themes over mini-kb + fresh-session run protocol; execute and record (SC-002, SC-008, SC-009)
 
 **Checkpoint**: MVP complete — add + ask deliver the core value loop
@@ -73,7 +73,7 @@
 
 ## Phase 9: User Story 7 — Semantic audit (P7)
 
-- [ ] T026 [US7] Author `adapters/claude/skills/kb-audit/SKILL.md` per skill-contracts.md: mechanical candidate pairs from kb-graph.sh output (shared tags / link neighborhoods / same theme / description token overlap), shortlist body reads only, findings report node with quoted evidence from both sides, per-finding confirmation → mirrored flags (`disputed=`, `duplicate-of=`, `superseded-by=`/`supersedes=`) or proposed links, merge preview before any merge
+- [ ] T026 [US7] Author `adapters/claude/skills/kb-audit/SKILL.md` per skill-contracts.md: mechanical candidate pairs from kb-graph.sh output (shared tags / link neighborhoods / same theme / description token overlap), shortlist body reads only, findings report node with quoted evidence from both sides, per-finding confirmation → mirrored flags (`disputed=`, `duplicate-of=`, `superseded-by=`/`supersedes=`) or proposed links, merge preview before any merge. **ITERATIVE — judgment quality tuned against seeded fixtures**
 - [ ] T027 [US7] Extend fixtures with 10 semantic defects (contradicting pairs, near-duplicates, superseded facts) + validation run → `specs/001-kb-kit-v1/validation/us7.md` (SC-010: ≥8 surfaced, zero unconfirmed changes)
 
 ## Phase 10: Polish & real-corpus validation
@@ -82,8 +82,9 @@
 - [ ] T029 Corpus validation №1 — private corpus A (research docs) (copy): full migration flow (US3), then one /kb-add and one /kb-ask on the migrated base → `specs/001-kb-kit-v1/validation/corpus-a-docs.md` (SC-003)
 - [ ] T030 Corpus validation №2 — private corpus B (sales CRM) (copy, 174 cards): kb-check must independently rediscover the documented reconciliation-note drift class → `specs/001-kb-kit-v1/validation/corpus-b-crm.md` (SC-006 real-world)
 - [ ] T031 Corpus validation №3 — private corpus C (client intake) (copy, ~240 heterogeneous files): /kb-add files 5 raw items incl. call-transcript quotes as evidence citations; non-md artifacts linked, not nodified → `specs/001-kb-kit-v1/validation/corpus-c-intake.md` (SC-001, SC-005, SC-009 real-world)
-- [ ] T032 [P] Verify quickstart.md end-to-end on a clean tmp repo (SC-004: nothing running, git+agent only); fix README install section to real paths
+- [ ] T032 [P] Verify quickstart.md end-to-end on a clean tmp repo (SC-004: nothing running, git+agent only); fix README install section to real paths and sweep README for overclaiming (verb tense honest vs shipped state)
 - [ ] T033 [P] Bootstrap public changelog `CHANGELOG.md` (v0.1 notes) per distribution-first strategy
+- [ ] T034 [P] Add `LICENSE` (MIT) + attribution note in README credits (launch blocker for OSS distribution)
 
 ## Dependencies & execution order
 
@@ -98,4 +99,11 @@
 
 ## Implementation strategy
 
-**MVP = Phases 1–4** (foundational + US1 + US2): a base that grows by command and answers with citations — the core value loop, dogfoodable immediately on the kb-kit repo itself. Then US3 unlocks external installs (and the launch), US4–US7 complete the discipline, Phase 10 proves it on the three real corpora before announcing.
+**MVP = Phases 1–4** (foundational + US1 + US2): a base that grows by command and answers with citations — the core value loop, dogfoodable immediately on the kb-kit repo itself.
+
+**Launch gates** (distribution-first: release early, release often):
+
+- **v0.1 — public launch after Phase 5** (MVP + install/migrate + LICENSE/CHANGELOG/README subset of Phase 10: T032–T034, plus corpus validation T029): the smallest thing a stranger can install. Do NOT wait for US4–US7.
+- **v0.2** — US4 (check) + US5 (viz): second launch announcement.
+- **v0.3** — US6 (packs) + US7 (audit) + remaining corpus validations: third announcement.
+- **Feature 002 (next spec, post-v0.1): product-development pack** — the flagship vertical module on top of the pack mechanism: CX/customer-journey disciplines, product-management best practices for new and existing products. Out of scope for 001 by decision (scope-growth stop procedure); the pack mechanism (US6) is its foundation.

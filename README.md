@@ -49,7 +49,7 @@ v1 in active development, spec-driven (see `specs/`). First adopter: a real prod
 
 ## Roadmap
 
-- **Packs** — vertical disciplines installed on top of the engine: sales CRM, startup validation, content pipeline, fundraising
+- **Packs** — vertical disciplines installed as modules on top of the engine. Flagship: **product development** (CX and customer-journey work, product-management best practices for new and existing products). Also: sales CRM, content pipeline, fundraising
 - **Adapters** — agent-neutral core; Codex (`AGENTS.md`) adapter next
 - **Registry** — discover and install community packs
 - **Embeddings** — optional derived cache for when a base outgrows grep (files stay the source of truth)

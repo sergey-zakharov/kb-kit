@@ -31,6 +31,8 @@ kb-check.sh [--base <dir>] [--json]
 
 Finding types (each with file, location, details): `broken-link`, `broken-anchor`, `broken-file-ref` (plain relative link to a non-existent artifact file, e.g. audio/spreadsheet cited by a node), `orphan-node` (no incoming links AND not indexed), `index-missing-row` (file on disk, no index reference), `index-stale-row` (reference without file), `unindexed-theme` (dir absent from KB.md), `frontmatter-invalid`, `flagged-node` (open consistency marks), `inbox-blocked` (items awaiting user). JSON schema: `{"findings": [{"type": "...", "file": "...", "detail": "...", "safe_fix": "add-index-row|null"}]}`. Only `safe_fix` entries may be auto-applied by the skill; everything else is propose-only.
 
+**Finding precedence**: a file yields at most one *structural* finding — the most specific type wins (`index-missing-row` over `orphan-node`; a node both unindexed and unlinked is reported once as `index-missing-row` with an "also orphaned" detail). `frontmatter-invalid` is reported independently of structural findings. Adopted nodes (no frontmatter, per data-model.md) are exempt from `frontmatter-invalid`.
+
 ## kb-viz.sh
 
 ```text

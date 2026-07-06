@@ -69,6 +69,23 @@ else
   RC=$?; [ "$RC" -eq 1 ] && ok "collision surfaced (exit 1), nothing overwritten" || fail "collision wrong exit code: $RC"
 fi
 
+# 6a2. mask v2: multi-theme install with partial collision
+mkdir -p "$TMP/kb/insights"   # pre-existing theme → must be skipped, not overwritten
+echo "pre-existing" > "$TMP/kb/insights/KEEP.md"
+if ( cd "$TMP" && "$ROOT/kb-init.sh" --mask product >/dev/null 2>&1 ); then
+  fail "partial collision did not exit 1"
+else
+  ok "partial collision surfaced (exit 1)"
+fi
+[ -f "$TMP/kb/insights/KEEP.md" ] && [ ! -f "$TMP/kb/insights/INDEX.md" ] && ok "colliding theme untouched" || fail "colliding theme was modified"
+for t in journeys hypotheses decisions segments; do
+  [ -f "$TMP/kb/$t/INDEX.md" ] && [ -f "$TMP/kb/$t/CLAUDE.md" ] || fail "theme $t not installed"
+done
+ok "non-colliding themes installed (4/5)"
+[ -f "$TMP/kb/hypotheses/.kb-checks.conf" ] && grep -q "REQUIRED_SECTIONS_hypothesis" "$TMP/kb/hypotheses/.kb-checks.conf" && ok "theme checks staged as .kb-checks.conf" || fail "checks not staged"
+grep -q "](hypotheses/INDEX.md)" "$TMP/kb/KB.md" && ok "KB.md gained mask theme rows" || fail "KB.md rows missing"
+[ -f "$TMP/.kb/masks/product/themes/insights/templates/insight.md" ] && ok "mask v2 staged in .kb/masks" || fail "mask staging missing"
+
 # 6b. --hooks wires automation without clobbering
 ( cd "$TMP" && "$ROOT/kb-init.sh" --hooks >/dev/null )
 [ -x "$TMP/.kb/hooks/session-start.sh" ] && [ -x "$TMP/.kb/hooks/posttool-check.sh" ] && ok "hook scripts staged+executable" || fail "hook scripts missing"

@@ -152,6 +152,7 @@ emit_tsv() {
         p = index(line, ":")
         if (p > 1) {
           k = trim(substr(line, 1, p - 1)); v = trim(substr(line, p + 1))
+          nkeys[nid] = (nkeys[nid] == "" ? k : nkeys[nid] "," k)
           if      (k == "name")        nname[nid] = v
           else if (k == "description") ndesc[nid] = v
           else if (k == "type")        ntype[nid] = v
@@ -163,7 +164,10 @@ emit_tsv() {
       # fenced code blocks: no headings, anchors, links, or filerefs inside
       if (line ~ /^(```|~~~)/) { infence = !infence; next }
       if (infence) next
-      if (line ~ /^#/) { h = line; sub(/^#+[ \t]*/, "", h); heads[nid "\t" slug(h)] = 1 }
+      if (line ~ /^#/) {
+        h = line; sub(/^#+[ \t]*/, "", h); hs = slug(h); heads[nid "\t" hs] = 1
+        nheads[nid] = (nheads[nid] == "" ? hs : nheads[nid] "," hs)
+      }
       if (line ~ /(^|[ \t])\^[A-Za-z0-9_-]+[ \t]*$/) {
         b = line; sub(/^.*\^/, "^", b); b = trim(b); blocks[nid "\t" b] = 1
       }
@@ -212,7 +216,7 @@ emit_tsv() {
       } else {
         if (ndesc[id] == "" && (nrel[id] in hookof)) ndesc[id] = hookof[nrel[id]]
       }
-      printf "NODE\t%s\t%s\t%s\t%d\t%d\t%s\t%s\t%s\t%s\t%s\n", id, ntheme[id], nrel[id], adopted[id], fmvalid, prob, ntype[id], nflags[id], ntags[id], ndesc[id]
+      printf "NODE\t%s\t%s\t%s\t%d\t%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", id, ntheme[id], nrel[id], adopted[id], fmvalid, prob, ntype[id], nflags[id], ntags[id], ndesc[id], nkeys[id], nheads[id]
     }
     # external bases: reachable name=path pairs (EXT) and unreachable (EXTU)
     extn = split(EXT, extp, ";")

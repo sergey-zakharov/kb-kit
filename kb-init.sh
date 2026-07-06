@@ -217,7 +217,42 @@ mask)
   PNAME="$(awk -F= '$1=="NAME"{print $2}' "$PDIR/mask.conf")"
   PDESC="$(awk -F= '$1=="DESCRIPTION"{print $2}' "$PDIR/mask.conf")"
   SLUG="$(awk -F= '$1=="THEME_SLUG"{print $2}' "$PDIR/mask.conf")"
-  [ -n "$SLUG" ] || { echo "kb-init: mask.conf has no THEME_SLUG" >&2; exit 2; }
+  THEMES="$(awk -F= '$1=="THEMES"{print $2}' "$PDIR/mask.conf")"
+  if [ -n "$THEMES" ]; then
+    # mask format v2: multiple themes, per-theme content in themes/<slug>/
+    mkdir -p "$TARGET/.kb/masks/$PNAME"
+    cp -rf "$PDIR/." "$TARGET/.kb/masks/$PNAME/"
+    COLLIDED=""
+    for SLUG in $THEMES; do
+      TD="$PDIR/themes/$SLUG"
+      [ -d "$TD" ] || { echo "kb-init: mask broken — themes/$SLUG missing in $PNAME" >&2; exit 2; }
+      THEME="$TARGET/$KB_DIR/$SLUG"
+      if [ -d "$THEME" ]; then COLLIDED="$COLLIDED $SLUG"; continue; fi
+      mkdir -p "$THEME"
+      printf '# %s — index\n\n' "$SLUG" > "$THEME/INDEX.md"
+      awk -v rules="$TD/rules.md" -v slug="$SLUG" '
+        /\{\{rules\}\}/ { while ((getline l < rules) > 0) print l; next }
+        { gsub(/\{\{theme\}\}/, slug); print }
+      ' "$SRC_DIR/adapters/claude/theme-CLAUDE.md.tmpl" > "$THEME/CLAUDE.md" 2>/dev/null \
+        || cp "$TD/rules.md" "$THEME/CLAUDE.md"
+      [ -f "$TD/checks.conf" ] && cp -f "$TD/checks.conf" "$THEME/.kb-checks.conf"
+      if [ -f "$TARGET/$KB_DIR/KB.md" ] && ! grep -q "]($SLUG/INDEX.md)" "$TARGET/$KB_DIR/KB.md"; then
+        awk -v row="- [$SLUG/]($SLUG/INDEX.md) — $PNAME mask: $SLUG" '
+          { print } /^## Themes$/ { getline nl; print nl; print row }
+        ' "$TARGET/$KB_DIR/KB.md" > "$TARGET/$KB_DIR/KB.md.tmp" && mv "$TARGET/$KB_DIR/KB.md.tmp" "$TARGET/$KB_DIR/KB.md"
+      fi
+      say "kb-init: theme $KB_DIR/$SLUG/ materialized (${PNAME} mask)"
+    done
+    if [ -n "$COLLIDED" ]; then
+      echo "kb-init: COLLISION — theme(s) already exist:$COLLIDED. They were SKIPPED (nothing overwritten)." >&2
+      echo "kb-init: resolve via /kb-init in your agent (merge/rename), then re-run." >&2
+      exit 1
+    fi
+    say "kb-init: mask '$PNAME' is on ($(echo $THEMES | wc -w) themes); templates in .kb/masks/$PNAME/themes/*/templates/"
+    if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"mask","mask":"%s","themes":"%s"}\n' "$PNAME" "$THEMES"; fi
+    exit 0
+  fi
+  [ -n "$SLUG" ] || { echo "kb-init: mask.conf has no THEME_SLUG (v1) or THEMES (v2)" >&2; exit 2; }
   THEME="$TARGET/$KB_DIR/$SLUG"
   if [ -d "$THEME" ]; then
     echo "kb-init: CONFLICT — theme '$SLUG' already exists at $KB_DIR/$SLUG/." >&2

@@ -20,6 +20,8 @@ kb-init.sh [--dir <path>]            # scaffold new base (default: kb/)
 
 Guarantees: idempotent re-run; `--migrate` writes only the report; `--apply-migration` adds rules/index files, never moves/renames/rewrites content; collision on mask theme slug → exit 1 with finding, no changes.
 
+**Mask format v2 (multi-theme)**: `mask.conf` with `THEMES=slug slug …` + per-theme content in `themes/<slug>/{rules.md,templates/,checks.conf}`; v1 (`THEME_SLUG=` + top-level files) still supported. Install materializes every free theme (INDEX, CLAUDE.md from rules, `checks.conf` → `<theme>/.kb-checks.conf`), skips colliding ones with a report and exit 1 — nothing overwritten. Theme invariants (`REQUIRED_FRONTMATTER_<type>=k,k`, `REQUIRED_SECTIONS_<type>=H|H`) are enforced by `kb-check` as finding **`mask-invariant`** (propose-only; adopted nodes exempt).
+
 ## kb-graph.sh
 
 ```text

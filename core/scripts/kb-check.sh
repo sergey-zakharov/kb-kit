@@ -29,8 +29,37 @@ SELF_DIR="$(cd "$(dirname "$0")" && pwd)"
 GRAPH="$SELF_DIR/kb-graph.sh"
 [ -x "$GRAPH" ] || { echo "kb-check: kb-graph.sh not found next to kb-check.sh" >&2; exit 2; }
 
-"$GRAPH" --base "$BASE" --tsv | LC_ALL=C awk -F"\t" -v MODE="$MODE" '
+# mask invariants: per-theme .kb-checks.conf → CHECKS records appended to the stream
+emit_checks() {
+  local f t line key
+  for f in "$BASE"/*/.kb-checks.conf; do
+    [ -f "$f" ] || continue
+    t="$(basename "$(dirname "$f")")"
+    while IFS= read -r line; do
+      case "$line" in
+        REQUIRED_FRONTMATTER_*=*) key="${line%%=*}"; printf 'CHECKS\t%s\tfm\t%s\t%s\n'  "$t" "${key#REQUIRED_FRONTMATTER_}" "${line#*=}" ;;
+        REQUIRED_SECTIONS_*=*)    key="${line%%=*}"; printf 'CHECKS\t%s\tsec\t%s\t%s\n' "$t" "${key#REQUIRED_SECTIONS_}"    "${line#*=}" ;;
+      esac
+    done < "$f"
+  done
+}
+
+{ "$GRAPH" --base "$BASE" --tsv; emit_checks; } | LC_ALL=C awk -F"\t" -v MODE="$MODE" '
   function jesc(s) { gsub(/\\/, "\\\\", s); gsub(/"/, "\\\"", s); return s }
+  function slug(s,  out, i, c) {
+    s = tolower(s); out = ""
+    for (i = 1; i <= length(s); i++) {
+      c = substr(s, i, 1)
+      if (c ~ /[a-z0-9]/) out = out c
+      else if (substr(out, length(out), 1) != "-" && out != "") out = out "-"
+    }
+    gsub(/-+$/, "", out); return out
+  }
+  function inlist(item, csv,   n, a, i) {
+    n = split(csv, a, ",")
+    for (i = 1; i <= n; i++) { gsub(/^[ \t]+|[ \t]+$/, "", a[i]); if (a[i] == item) return 1 }
+    return 0
+  }
   function addf(type, file, detail, safefix) {
     fcount++
     ftype[fcount] = type; ffile[fcount] = file; fdetail[fcount] = detail; ffix[fcount] = safefix
@@ -39,7 +68,12 @@ GRAPH="$SELF_DIR/kb-graph.sh"
     nc++
     id[nc] = $2; theme[nc] = $3; rel[nc] = $4
     adopted[nc] = $5; fmvalid[nc] = $6; fmprob[nc] = $7; flags[nc] = $9
+    ntype[nc] = $8; fmkeys[nc] = $12; headslugs[nc] = $13
     file_of[$2] = $4
+  }
+  $1 == "CHECKS" {
+    if ($3 == "fm")  cfm[$2 SUBSEP $4] = $5
+    if ($3 == "sec") csec[$2 SUBSEP $4] = $5
   }
   $1 == "EDGE" {
     ec++
@@ -81,6 +115,25 @@ GRAPH="$SELF_DIR/kb-graph.sh"
         addf("frontmatter-invalid", rel[i], fmprob[i], "")
       if (flags[i] != "")
         addf("flagged-node", rel[i], "open consistency marks: " flags[i], "")
+      # mask invariants (adopted nodes exempt)
+      if (adopted[i] == 0 && ntype[i] != "") {
+        if ((theme[i] SUBSEP ntype[i]) in cfm) {
+          n = split(cfm[theme[i] SUBSEP ntype[i]], req, ",")
+          for (r = 1; r <= n; r++) {
+            gsub(/^[ \t]+|[ \t]+$/, "", req[r])
+            if (req[r] != "" && !inlist(req[r], fmkeys[i]))
+              addf("mask-invariant", rel[i], "type \"" ntype[i] "\" requires frontmatter key \"" req[r] "\"", "")
+          }
+        }
+        if ((theme[i] SUBSEP ntype[i]) in csec) {
+          n = split(csec[theme[i] SUBSEP ntype[i]], req, "|")
+          for (r = 1; r <= n; r++) {
+            gsub(/^[ \t]+|[ \t]+$/, "", req[r])
+            if (req[r] != "" && !inlist(slug(req[r]), headslugs[i]))
+              addf("mask-invariant", rel[i], "type \"" ntype[i] "\" requires section \"" req[r] "\"", "")
+          }
+        }
+      }
     }
     for (i = 1; i <= tc; i++)
       addf("unindexed-theme", tmiss[i], "theme directory not listed in KB.md", "")

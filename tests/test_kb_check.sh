@@ -50,4 +50,13 @@ echo "$JOUT" | grep -q '"detail": "node has no index row; also orphaned (no inco
   && ok "missing-row carries orphan detail + safe_fix" || fail "missing-row detail/safe_fix wrong"
 echo "$JOUT" | grep -q '"file": "stray/lonely.md"' && fail "lonely.md wrongly flagged (indexed in own theme)" || ok "theme-internal indexing respected"
 
+# mask invariants (.kb-checks.conf): violations detected, clean node silent (SC-103)
+MOUT=$($CHECK --base tests/fixtures/mini-kb-masked --json); MRC=$?
+[ $MRC -eq 1 ] && ok "masked fixture exits 1" || fail "masked fixture rc=$MRC"
+echo "$MOUT" | grep -q 'requires frontmatter key \\"status\\"' && ok "mask-invariant: missing frontmatter key" || fail "fm invariant not detected"
+echo "$MOUT" | grep -q 'requires section \\"Check plan\\"' && ok "mask-invariant: missing section" || fail "section invariant not detected"
+MN=$(echo "$MOUT" | grep -c '"type": "mask-invariant"')
+[ "$MN" -eq 2 ] && ok "exactly 2 mask-invariant findings" || fail "expected 2 mask-invariant, got $MN"
+echo "$MOUT" | grep -q 'good-hypothesis' && fail "clean hypothesis wrongly flagged" || ok "clean hypothesis silent"
+
 [ $FAIL -eq 0 ] && echo "test_kb_check: PASS" || { echo "test_kb_check: FAIL"; exit 1; }

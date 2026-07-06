@@ -89,6 +89,9 @@ as one unit:
 
 ```bash
 ~/tools/kb-kit/kb-init.sh --mask sources    # built-in: source-library discipline
+~/tools/kb-kit/kb-init.sh --mask product    # built-in: product development —
+    # evidence-backed insights (Mom Test), journeys, falsifiable hypotheses,
+    # ADR-light decisions, segments; invariants enforced by /kb-check
 ```
 
 Putting on a mask materializes its themes (with indexes and rules) in your

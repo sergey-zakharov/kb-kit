@@ -1,57 +1,64 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="420" viewBox="0 0 1600 420" role="img" aria-label="kb-kit — the constellation that wears a mask">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="420" viewBox="0 0 1600 420" role="img" aria-label="kb-kit — markdown files linked into an evidence graph">
   <defs>
     <clipPath id="r"><rect width="1600" height="420" rx="24"/></clipPath>
   </defs>
   <g clip-path="url(#r)">
     <rect width="1600" height="420" fill="#14161c"/>
 
-    <!-- constellation: node positions trace a domino mask; you see it on the second glance -->
-    <g stroke="#2c3140" stroke-width="2" fill="none">
-      <path d="M235,175 L300,128"/>
-      <path d="M300,128 L400,112"/>
-      <path d="M400,112 L500,128"/>
-      <path d="M500,128 L565,175"/>
-      <path d="M235,175 L262,242"/>
-      <path d="M262,242 L400,272"/>
-      <path d="M400,272 L538,242"/>
-      <path d="M538,242 L565,175"/>
-      <path d="M330,196 L400,112"/>
-      <path d="M330,196 L262,242"/>
-      <path d="M470,196 L400,112"/>
-      <path d="M470,196 L538,242"/>
-      <path d="M330,196 L400,272"/>
-      <path d="M470,196 L400,272"/>
-      <!-- loose ends: the graph continues beyond the mask -->
-      <path d="M235,175 L152,150"/>
-      <path d="M565,175 L652,148"/>
-      <path d="M652,148 L718,190"/>
-      <path d="M152,150 L96,205"/>
+    <!-- evidence chain: decision → insight → source quote -->
+    <!-- edges first (under cards) -->
+    <g fill="none">
+      <path d="M395,198 C455,192 472,152 520,122" stroke="#e8a04c" stroke-width="3"/>
+      <path d="M400,318 C310,318 265,275 263,228" stroke="#e8a04c" stroke-width="3"/>
+      <path d="M648,180 C660,230 660,250 645,262" stroke="#3c4356" stroke-width="2.5"/>
     </g>
+
+    <!-- card: source (interview) -->
     <g>
-      <circle cx="300" cy="128" r="9"  fill="#5b9bd5" opacity="0.75"/>
-      <circle cx="400" cy="112" r="11" fill="#8f7ee6" opacity="0.75"/>
-      <circle cx="500" cy="128" r="9"  fill="#70ad47" opacity="0.75"/>
-      <circle cx="235" cy="175" r="8"  fill="#4cbfbf" opacity="0.75"/>
-      <circle cx="565" cy="175" r="8"  fill="#c65b8a" opacity="0.75"/>
-      <circle cx="262" cy="242" r="9"  fill="#70ad47" opacity="0.75"/>
-      <circle cx="400" cy="272" r="10" fill="#5b9bd5" opacity="0.75"/>
-      <circle cx="538" cy="242" r="9"  fill="#8f7ee6" opacity="0.75"/>
-      <circle cx="152" cy="150" r="6"  fill="#3c4356"/>
-      <circle cx="96"  cy="205" r="5"  fill="#3c4356"/>
-      <circle cx="652" cy="148" r="6"  fill="#3c4356"/>
-      <circle cx="718" cy="190" r="5"  fill="#3c4356"/>
-      <!-- the eyes: the only full-strength accents on the canvas -->
-      <circle cx="330" cy="196" r="15" fill="#e8a04c"/>
-      <circle cx="470" cy="196" r="15" fill="#e8a04c"/>
+      <rect x="520" y="60" width="256" height="120" rx="10" fill="#1d2029" stroke="#2c3140" stroke-width="1.5"/>
+      <g font-family="ui-monospace, 'SF Mono', Consolas, monospace" font-size="15">
+        <text x="542" y="92"  fill="#5a6072">sources/interview.md</text>
+        <text x="542" y="120" fill="#d7dae2">"I can't find anything"</text>
+        <text x="542" y="148" fill="#5a6072">(12:40) <tspan fill="#e8a04c">^q1</tspan></text>
+      </g>
+    </g>
+
+    <!-- card: insight -->
+    <g>
+      <rect x="140" y="96" width="255" height="130" rx="10" fill="#1d2029" stroke="#2c3140" stroke-width="1.5"/>
+      <g font-family="ui-monospace, 'SF Mono', Consolas, monospace" font-size="15">
+        <text x="162" y="126" fill="#5a6072">insights/</text>
+        <text x="162" y="152" fill="#aab0c0">name: cant-retrieve</text>
+        <text x="162" y="178" fill="#aab0c0">Evidence:</text>
+        <text x="186" y="204" fill="#e8a04c">[[interview#^q1]]</text>
+      </g>
+    </g>
+
+    <!-- card: decision -->
+    <g>
+      <rect x="400" y="262" width="270" height="118" rx="10" fill="#1d2029" stroke="#2c3140" stroke-width="1.5"/>
+      <g font-family="ui-monospace, 'SF Mono', Consolas, monospace" font-size="15">
+        <text x="422" y="294" fill="#5a6072">decisions/001-*.md</text>
+        <text x="422" y="322" fill="#aab0c0">status: <tspan fill="#70ad47">active</tspan></text>
+        <text x="422" y="350" fill="#aab0c0">why: <tspan fill="#e8a04c">[[cant-retrieve]]</tspan></text>
+      </g>
+    </g>
+
+    <!-- ports on the edges -->
+    <g fill="#e8a04c">
+      <circle cx="395" cy="198" r="5.5"/>
+      <circle cx="520" cy="122" r="5.5"/>
+      <circle cx="400" cy="318" r="5.5"/>
+      <circle cx="263" cy="228" r="5.5"/>
     </g>
 
     <!-- wordmark: the hyphen IS a graph edge -->
     <g font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
       <text x="950" y="212" font-size="112" font-weight="800" fill="#e8eaf0" letter-spacing="-3">kb</text>
       <g>
-        <line x1="1102" y1="176" x2="1188" y2="176" stroke="#e8a04c" stroke-width="7"/>
-        <circle cx="1102" cy="176" r="12" fill="#e8a04c"/>
-        <circle cx="1188" cy="176" r="12" fill="#e8a04c"/>
+        <line x1="1108" y1="176" x2="1186" y2="176" stroke="#e8a04c" stroke-width="7"/>
+        <circle cx="1108" cy="176" r="12" fill="#e8a04c"/>
+        <circle cx="1186" cy="176" r="12" fill="#e8a04c"/>
       </g>
       <text x="1222" y="212" font-size="112" font-weight="800" fill="#e8eaf0" letter-spacing="-3">kit</text>
       <text x="954" y="266" font-size="27" fill="#aab0c0">A knowledge base your AI agent</text>

@@ -108,6 +108,23 @@ A user installs a pack — a packaged vertical discipline (e.g., a sales CRM the
 
 ---
 
+### User Story 7 - Audit the base for semantic consistency (Priority: P7)
+
+Periodically the user runs a deep-scan command. Unlike hygiene (mechanical, structural), the audit reads content: it looks for facts that contradict each other, near-duplicate nodes, stale facts superseded by newer ones, and entities that clearly should be linked but aren't. Findings come back as a report quoting the evidence; findings the user approves are recorded as visible marks on the affected nodes (e.g., a "disputed" mark naming both sides), so inconsistency is never silent — it is either resolved or labeled.
+
+**Why this priority**: Filing-time conflict detection (Story 1) only catches collisions the filer sees; contradictions also *emerge* as facts age. A periodic content-level scan is the complement that keeps trust in the base. It consumes everything Stories 1–4 produce.
+
+**Independent Test**: Seed a copy of a test corpus with known semantic defects (contradicting pairs, near-duplicates, superseded facts); verify the audit surfaces them with quoted evidence and changes nothing without confirmation.
+
+**Acceptance Scenarios**:
+
+1. **Given** two nodes asserting incompatible facts, **When** the audit runs, **Then** the pair is reported with both statements quoted and their files named.
+2. **Given** the user approves a contradiction finding, **When** the audit applies it, **Then** both nodes receive a visible mark referencing each other, and the marks are discoverable by later hygiene/audit runs.
+3. **Given** two near-duplicate nodes, **When** the audit runs, **Then** a merge is proposed with a diff-style preview; merging happens only on confirmation.
+4. **Given** a large base, **When** the audit runs, **Then** it narrows candidates using indexes and metadata first rather than reading every node body for every comparison.
+
+---
+
 ### Edge Cases
 
 - Raw input that yields multiple facts (a long transcript): filing splits it into several nodes, reporting the full mapping; the user can veto the split.
@@ -117,6 +134,7 @@ A user installs a pack — a packaged vertical discipline (e.g., a sales CRM the
 - Installation into a repository that is not under version control: allowed with a prominent warning that the safety model (diff/review/rollback) is degraded.
 - The INBOX contains an item too vague to classify: it stays in the queue with a recorded question to the user, rather than being force-filed.
 - Migration encounters an existing file that is itself an index of another area (nested index): adopted as-is; nesting is respected, not flattened.
+- Fact-level anchoring inside adopted (pre-existing) files: inserting an anchor mark edits a file kb-kit does not own — allowed only with confirmation; otherwise the citation falls back to link + verbatim quote, which needs no file edit.
 
 ## Requirements *(mandatory)*
 
@@ -138,6 +156,8 @@ A user installs a pack — a packaged vertical discipline (e.g., a sales CRM the
 - **FR-014**: All state MUST live in files under version control; the system MUST require no background processes, servers, databases, or external services, and MUST function on any machine with git and the supported agent tooling.
 - **FR-015**: Node slugs and frontmatter keys MUST be in English; node bodies follow the user's working language.
 - **FR-016**: The filing command MUST accept material explicitly provided by the user (pasted text, file references, links with commentary) and MUST additionally support an explicit "from current conversation" mode that extracts candidate facts from the active session on command — presented for confirmation before filing, and never triggered passively.
+- **FR-017**: Citations MUST work at fact granularity, not only file granularity: (a) links MAY target a section or marked block inside a node (`[[name#anchor]]`); (b) a claim derived from source material MUST carry the verbatim quote and its locator (timecode, section) alongside the link to the source node; (c) retrieval answers MUST quote the specific supporting line(s) of cited nodes, not merely name the files; (d) hygiene MUST validate that anchored links point to anchors that exist.
+- **FR-018**: A semantic audit command MUST scan base content for contradictions between nodes, near-duplicate nodes, superseded/stale facts, and missing links between clearly related nodes; it MUST narrow candidates via indexes and metadata before reading bodies (never all-pairs full reads); findings MUST be reported with quoted evidence; approved findings are recorded as visible, machine-findable consistency marks on the affected nodes; the audit applies no change without confirmation.
 
 ### Key Entities
 
@@ -148,6 +168,8 @@ A user installs a pack — a packaged vertical discipline (e.g., a sales CRM the
 - **INBOX**: the queue of raw, not-yet-filed material with per-item status.
 - **Pack**: an installable unit bundling node templates, theme rules, and hygiene invariants for a vertical discipline.
 - **Corpus (pre-existing)**: a user's existing document collection with de-facto conventions that installation must respect and formalize, not replace.
+- **Evidence citation**: a link to a source node plus the verbatim quote and locator (timecode/section) supporting a claim; the unit of fact-level referencing.
+- **Consistency mark**: a visible, machine-findable label on a node recording an audit outcome (disputed-with, superseded-by, duplicate-of), always referencing the counterpart node.
 
 ## Success Criteria *(mandatory)*
 
@@ -161,6 +183,8 @@ A user installs a pack — a packaged vertical discipline (e.g., a sales CRM the
 - **SC-006**: On a corpus seeded with known defects (including the documented historical drift of the reference CRM corpus), the hygiene command detects 100% of seeded broken links, orphans, and index drift cases.
 - **SC-007**: The visualization file opens offline in a stock browser and renders every node and edge of a base of at least 200 nodes, as a single file.
 - **SC-008**: Answering a typical question reads no more than 10% of the base's total content volume (staged retrieval economy).
+- **SC-009**: In a spot-check of 20 base-derived claims across retrieval answers, 100% are supported by an accurate verbatim quote from the cited node (fact-level citation).
+- **SC-010**: On a corpus seeded with 10 semantic defects (contradicting pairs, near-duplicates, superseded facts), the audit surfaces at least 8, and applies zero changes without explicit confirmation.
 
 ## Assumptions
 

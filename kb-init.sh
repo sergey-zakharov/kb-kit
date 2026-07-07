@@ -7,6 +7,8 @@
 #   kb-init.sh --migrate <corpus-dir>    install toolkit + write MIGRATION_REPORT.md (report only)
 #   kb-init.sh --apply-migration <rpt>   create KB.md skeleton from a reviewed report (adds files only)
 #   kb-init.sh --update                  refresh .kb/ and .claude/skills/ (never touches knowledge)
+#   kb-init.sh --user-skills             install kb-* skills user-level (~/.claude/skills): commands in EVERY
+#                                        project; they act only where a base exists (./.kb/config)
 #   kb-init.sh --hooks                   wire automation: git pre-commit + Claude Code hooks + CI template
 #   kb-init.sh --uninstall               remove toolkit (.kb/, .claude/skills/kb-*); knowledge untouched
 #   kb-init.sh --mask <name|path>        put on a mask (--pack kept as alias)
@@ -28,6 +30,7 @@ while [ $# -gt 0 ]; do
     --migrate)         MODE="migrate"; ARG="${2:?}"; shift 2 ;;
     --apply-migration) MODE="apply"; ARG="${2:?}"; shift 2 ;;
     --update)          MODE="update"; shift ;;
+    --user-skills)     MODE="userskills"; shift ;;
     --hooks)           MODE="hooks"; shift ;;
     --uninstall)       MODE="uninstall"; shift ;;
     --mask|--pack)     MODE="mask"; ARG="${2:?}"; shift 2 ;;
@@ -158,6 +161,16 @@ apply)
     say "kb-init: INBOX.md created at $KB_DIR/INBOX.md"
   fi
   if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"apply","kb_dir":"%s"}\n' "$KB_DIR"; fi
+  ;;
+
+userskills)
+  DEST="$HOME/.claude/skills"
+  mkdir -p "$DEST"
+  cp -rf "$SRC_DIR"/adapters/claude/skills/. "$DEST/"
+  say "kb-init: kb-* skills installed user-level at $DEST"
+  say "kb-init: /kb-add, /kb-ask, /kb-check, /kb-audit, /kb-viz now exist in every project"
+  say "kb-init: they act only where a base is installed (./.kb/config); restart open sessions to pick them up"
+  if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"user-skills","dest":"%s"}\n' "$DEST"; fi
   ;;
 
 hooks)

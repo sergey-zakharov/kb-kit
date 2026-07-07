@@ -100,6 +100,11 @@ Have a docs folder already? `kb-init.sh --migrate docs` adopts it **without
 moving a single file** — your conventions win, kb-kit adapts. Leaving?
 `--uninstall` removes the toolkit and your knowledge stays plain markdown.
 
+Want `/kb-add` and friends available in **every** project, not just installed
+ones? `kb-init.sh --user-skills` puts the skills at user level
+(`~/.claude/skills`); they act wherever a base exists and politely point to
+`kb-init` where none does.
+
 ## Commands
 
 | Command | What it does |

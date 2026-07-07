@@ -10,6 +10,8 @@ kb-init.sh [--dir <path>]            # scaffold new base (default: kb/)
            --apply-migration <report># phase B apply (invoked by /kb-init skill after confirmation)
            --mask <name|path>        # put on a mask (kit-mask); --pack = legacy alias
            --update                  # refresh .kb/scripts+templates and .claude/skills only (preserves custom config lines)
+           --user-skills             # install kb-* skills to ~/.claude/skills: commands exist in every project,
+                                     # act only where ./.kb/config exists (skills locate the base themselves)
            --hooks                   # wire automation: git pre-commit (warn-only; KB_PRECOMMIT_STRICT=1 blocks),
                                      # Claude Code hooks (SessionStart status, PostToolUse hygiene on Write/Edit),
                                      # CI template staged at .kb/hooks/kb-check.yml. Never clobbers existing

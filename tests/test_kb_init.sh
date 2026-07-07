@@ -101,6 +101,13 @@ grep -q "echo custom" "$TMP/.git/hooks/pre-commit" && ok "existing pre-commit no
 # hook behavior: clean base → pre-commit passes
 ( cd "$TMP" && git add -A >/dev/null 2>&1; bash .kb/hooks/pre-commit.kb.sh ) && ok "pre-commit exits 0 on clean base" || fail "pre-commit failed on clean base"
 
+# 6c. --user-skills installs to $HOME/.claude/skills (HOME overridden for the test)
+FAKEHOME="$ROOT/tests/tmp/fakehome"
+rm -rf "$FAKEHOME"; mkdir -p "$FAKEHOME"
+( cd "$TMP" && HOME="$FAKEHOME" "$ROOT/kb-init.sh" --user-skills >/dev/null )
+[ -f "$FAKEHOME/.claude/skills/kb-add/SKILL.md" ] && [ -f "$FAKEHOME/.claude/skills/kb-audit/SKILL.md" ] \
+  && ok "--user-skills installs skills user-level" || fail "user-level skills missing"
+
 # 7. --uninstall removes toolkit only, knowledge untouched
 ( cd "$TMP" && "$ROOT/kb-init.sh" --uninstall >/dev/null )
 [ ! -d "$TMP/.kb" ] && ok "--uninstall removed .kb/" || fail ".kb/ survived uninstall"

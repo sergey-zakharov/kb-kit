@@ -2,6 +2,12 @@
 
 All notable changes to kb-kit. Public from the first commit — that's the point.
 
+## v0.2.1 — 2026-07-07
+
+- **`kb-init --user-skills`** — kb-* commands at user level (~/.claude/skills):
+  available in every project, act only where a base exists. Fixes "/kb-add: no
+  commands match" when working outside an installed repo.
+
 ## v0.2.0 — 2026-07-06
 
 - **Product-development mask** — the first full kit-mask: 5 themes (insights

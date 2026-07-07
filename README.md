@@ -113,6 +113,10 @@ moving a single file** — your conventions win, kb-kit adapts. Leaving?
 
 ## Masks
 
+<p align="center">
+  <img src="assets/masks.svg" alt="kit-masks: one graph, interchangeable masks" width="82%">
+</p>
+
 A **kit-mask** = node templates + theme rules + hygiene invariants, installed
 as one unit. Built-in today:
 

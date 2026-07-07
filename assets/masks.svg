@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 0 1200 340" role="img" aria-label="kit-masks: one graph, interchangeable masks">
+  <defs>
+    <clipPath id="r"><rect width="1200" height="340" rx="20"/></clipPath>
+  </defs>
+  <g clip-path="url(#r)" font-family="ui-monospace, 'SF Mono', Consolas, monospace">
+    <rect width="1200" height="340" fill="#14161c"/>
+
+    <!-- connectors: masks plug into the base -->
+    <g stroke-width="3" fill="none">
+      <path d="M240,170 L240,230" stroke="#e8a04c"/>
+      <path d="M600,170 L600,230" stroke="#5b9bd5"/>
+      <path d="M960,170 L960,230" stroke="#8f7ee6" stroke-dasharray="6 6"/>
+    </g>
+    <g>
+      <circle cx="240" cy="170" r="5.5" fill="#e8a04c"/><circle cx="240" cy="230" r="5.5" fill="#e8a04c"/>
+      <circle cx="600" cy="170" r="5.5" fill="#5b9bd5"/><circle cx="600" cy="230" r="5.5" fill="#5b9bd5"/>
+      <circle cx="960" cy="170" r="5.5" fill="#8f7ee6"/><circle cx="960" cy="230" r="5.5" fill="#8f7ee6"/>
+    </g>
+
+    <!-- mask cards -->
+    <g>
+      <rect x="90" y="40" width="300" height="130" rx="10" fill="#1d2029" stroke="#2c3140" stroke-width="1.5"/>
+      <text x="114" y="76" font-size="17" fill="#e8a04c">--mask product</text>
+      <text x="114" y="108" font-size="15" fill="#aab0c0">insights · journeys · segments</text>
+      <text x="114" y="136" font-size="15" fill="#aab0c0">hypotheses · decisions</text>
+    </g>
+    <g>
+      <rect x="450" y="40" width="300" height="130" rx="10" fill="#1d2029" stroke="#2c3140" stroke-width="1.5"/>
+      <text x="474" y="76" font-size="17" fill="#5b9bd5">--mask sources</text>
+      <text x="474" y="108" font-size="15" fill="#aab0c0">one file per material</text>
+      <text x="474" y="136" font-size="15" fill="#aab0c0">"quotes" (12:40) ^anchors</text>
+    </g>
+    <g>
+      <rect x="810" y="40" width="300" height="130" rx="10" fill="#1d2029" stroke="#2c3140" stroke-width="1.5" stroke-dasharray="7 5"/>
+      <text x="834" y="76" font-size="17" fill="#8f7ee6">--mask crm <tspan fill="#5a6072">(soon)</tspan></text>
+      <text x="834" y="108" font-size="15" fill="#aab0c0">leads · pipeline stages</text>
+      <text x="834" y="136" font-size="15" fill="#aab0c0">next-action invariants</text>
+    </g>
+
+    <!-- the base: one graph -->
+    <rect x="140" y="230" width="920" height="70" rx="12" fill="#1d2029" stroke="#2c3140" stroke-width="1.5"/>
+    <text x="176" y="273" font-size="17" fill="#d7dae2">kb/ <tspan fill="#5a6072">— one graph, same files</tspan></text>
+    <g>
+      <path d="M560,265 L1010,265" stroke="#3c4356" stroke-width="2"/>
+      <circle cx="560"  cy="265" r="7" fill="#5b9bd5"/>
+      <circle cx="650"  cy="265" r="6" fill="#70ad47"/>
+      <circle cx="740"  cy="265" r="7" fill="#e8a04c"/>
+      <circle cx="830"  cy="265" r="6" fill="#c65b8a"/>
+      <circle cx="920"  cy="265" r="7" fill="#8f7ee6"/>
+      <circle cx="1010" cy="265" r="6" fill="#4cbfbf"/>
+    </g>
+  </g>
+</svg>

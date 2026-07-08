@@ -1,0 +1,438 @@
+<style>
+  :root{
+    --ink:#EEF0EE; --panel:#E6E9E6; --panel2:#DDE1DE; --fg:#14191B; --muted:#59686C;
+    --bracket:#A6B1AF; --signal:#B4720A; --signal-bright:#CE850F;
+    --line:rgba(20,25,27,0.12); --line2:rgba(20,25,27,0.20); --sel:rgba(180,114,10,0.18);
+    --graph-dot:rgba(20,25,27,0.18); --graph-edge:rgba(20,25,27,0.09);
+    --ok:#3E7D57;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#0F1518; --panel:#151D21; --panel2:#1B242A; --fg:#EAE7DF; --muted:#7E8D92;
+      --bracket:#46555A; --signal:#F5B942; --signal-bright:#FFC94D;
+      --line:rgba(234,231,223,0.10); --line2:rgba(234,231,223,0.18); --sel:rgba(245,185,66,0.20);
+      --graph-dot:rgba(234,231,223,0.14); --graph-edge:rgba(234,231,223,0.06);
+      --ok:#5FBE8A;
+    }
+  }
+  :root[data-theme="light"]{
+    --ink:#EEF0EE; --panel:#E6E9E6; --panel2:#DDE1DE; --fg:#14191B; --muted:#59686C;
+    --bracket:#A6B1AF; --signal:#B4720A; --signal-bright:#CE850F;
+    --line:rgba(20,25,27,0.12); --line2:rgba(20,25,27,0.20); --sel:rgba(180,114,10,0.18);
+    --graph-dot:rgba(20,25,27,0.18); --graph-edge:rgba(20,25,27,0.09); --ok:#3E7D57;
+  }
+  :root[data-theme="dark"]{
+    --ink:#0F1518; --panel:#151D21; --panel2:#1B242A; --fg:#EAE7DF; --muted:#7E8D92;
+    --bracket:#46555A; --signal:#F5B942; --signal-bright:#FFC94D;
+    --line:rgba(234,231,223,0.10); --line2:rgba(234,231,223,0.18); --sel:rgba(245,185,66,0.20);
+    --graph-dot:rgba(234,231,223,0.14); --graph-edge:rgba(234,231,223,0.06); --ok:#5FBE8A;
+  }
+
+  *{ box-sizing:border-box; }
+  ::selection{ background:var(--sel); }
+
+  .page{
+    position:relative; min-height:100vh; overflow-x:hidden;
+    background:var(--ink); color:var(--fg); font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+  }
+  .graph{ position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+
+  /* ---- nav ---- */
+  .nav{
+    position:sticky; top:0; z-index:5;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:1rem; padding:.85rem clamp(1.2rem,5vw,3.5rem);
+    background:color-mix(in srgb, var(--ink) 82%, transparent);
+    backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+    font-family:var(--mono);
+  }
+  .nav .brand{ display:flex; align-items:center; gap:.5em; color:var(--fg); font-size:.9rem; letter-spacing:.03em; }
+  .nav .brand .tick{ width:.5em; height:.5em; background:var(--signal); display:inline-block; }
+  .nav .links{ display:flex; gap:clamp(.7rem,2.4vw,1.8rem); font-size:.8rem; }
+  .nav .links a{ color:var(--muted); text-decoration:none; letter-spacing:.04em; transition:color .2s; }
+  .nav .links a:hover, .nav .links a:focus-visible{ color:var(--signal-bright); }
+  .nav .links a:focus-visible{ outline:1px solid var(--signal); outline-offset:3px; }
+  @media (max-width:620px){ .nav .links a[data-opt]{ display:none; } }
+
+  section{ scroll-margin-top:4rem; }
+  .wrap{ max-width:72rem; margin:0 auto; padding:0 clamp(1.2rem,5vw,3.5rem); position:relative; z-index:1; }
+
+  .eyebrow{
+    font-family:var(--mono); text-transform:uppercase; letter-spacing:.24em;
+    font-size:clamp(.68rem,1.5vw,.8rem); color:var(--muted); margin:0;
+  }
+
+  /* ---- hero ---- */
+  .hero{ min-height:calc(100vh - 3.5rem); display:flex; flex-direction:column; justify-content:center;
+    gap:clamp(1.1rem,3.2vh,2.1rem); padding:clamp(2rem,7vh,5rem) 0; }
+  .wordmark{
+    margin:0; font-family:var(--mono); font-weight:500; line-height:.95;
+    font-size:clamp(3rem,13vw,9.5rem); letter-spacing:-.02em;
+    display:flex; align-items:baseline; color:var(--fg); white-space:nowrap;
+  }
+  .wordmark .brk{ color:var(--bracket); font-weight:400; }
+  .wordmark .slot{ display:inline-block; text-align:center; overflow:visible; margin:0 .06em;
+    color:var(--signal); width:7ch; transition:width 340ms cubic-bezier(.45,0,.2,1); }
+  .wordmark .word{ display:inline-block; will-change:transform,opacity;
+    transition:transform 260ms ease, opacity 260ms ease; }
+  .wordmark .ops{ color:var(--fg); }
+  .caption{ font-family:var(--mono); margin:0; color:var(--muted); font-size:clamp(.9rem,2vw,1.05rem); }
+  .thesis{ margin:0; font-weight:600; font-size:clamp(1.35rem,3.6vw,2.15rem); line-height:1.14;
+    color:var(--fg); text-wrap:balance; max-width:24ch; }
+  .lede{ margin:0; font-size:clamp(1rem,1.5vw,1.14rem); line-height:1.55; color:var(--muted); max-width:58ch; }
+  .lede b{ color:var(--fg); font-weight:600; }
+
+  .rail{ display:flex; flex-wrap:wrap; gap:.5rem; list-style:none; margin:.2rem 0 0; padding:0;
+    font-family:var(--mono); font-size:clamp(.76rem,1.5vw,.88rem); }
+  .rail li{ color:var(--muted); padding:.3em .62em; border:1px solid var(--line); border-radius:2px;
+    letter-spacing:.03em; transition:color .3s,border-color .3s,background .3s; }
+  .rail li::before{ content:"["; color:var(--bracket); }
+  .rail li::after{ content:"]"; color:var(--bracket); }
+  .rail li.active{ color:var(--signal-bright); border-color:var(--signal); background:var(--sel); }
+  .rail li.active::before, .rail li.active::after{ color:var(--signal); }
+
+  .constants{ display:flex; flex-wrap:wrap; align-items:baseline; gap:.55rem 1.1rem; margin:.4rem 0 0;
+    padding-top:1.1rem; border-top:1px solid var(--line); font-family:var(--mono);
+    font-size:clamp(.7rem,1.4vw,.8rem); color:var(--muted); }
+  .constants .lbl{ text-transform:uppercase; letter-spacing:.18em; opacity:.75; }
+  .constants .items{ letter-spacing:.04em; }
+  .constants .arrow{ color:var(--signal); }
+
+  /* ---- generic section head ---- */
+  .shead{ display:flex; flex-direction:column; gap:.7rem; margin-bottom:clamp(1.6rem,4vh,2.6rem); }
+  .shead h2{ margin:0; font-weight:650; font-size:clamp(1.7rem,4.2vw,2.7rem); line-height:1.08;
+    letter-spacing:-.01em; text-wrap:balance; max-width:20ch; }
+  .shead p{ margin:0; color:var(--muted); font-size:clamp(1rem,1.6vw,1.16rem); line-height:1.55; max-width:56ch; }
+  .band{ padding:clamp(4rem,11vh,7rem) 0; border-top:1px solid var(--line); }
+
+  /* ---- why / trends ---- */
+  .pillars{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:clamp(1rem,2.4vw,1.6rem); }
+  .pillar{ border:1px solid var(--line); background:var(--panel); border-radius:3px; padding:1.4rem 1.3rem;
+    display:flex; flex-direction:column; gap:.7rem; }
+  .pillar .n{ font-family:var(--mono); font-size:.78rem; letter-spacing:.14em; color:var(--signal);
+    text-transform:uppercase; }
+  .pillar h3{ margin:0; font-size:1.16rem; line-height:1.2; font-weight:640; text-wrap:balance; }
+  .pillar p{ margin:0; color:var(--muted); font-size:.98rem; line-height:1.5; }
+  .why-punch{ margin:clamp(1.6rem,4vh,2.4rem) 0 0; font-family:var(--mono); font-size:clamp(.95rem,1.8vw,1.1rem);
+    line-height:1.5; color:var(--fg); border-left:2px solid var(--signal); padding-left:1rem; max-width:60ch; }
+  .why-punch b{ color:var(--signal-bright); font-weight:500; }
+  .src{ margin-top:1.1rem; font-family:var(--mono); font-size:.75rem; color:var(--muted); letter-spacing:.02em; }
+
+  /* ---- masks grid ---- */
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(272px,1fr)); gap:clamp(.9rem,2vw,1.2rem); }
+  .card{ border:1px solid var(--line); background:var(--panel); border-radius:3px; padding:1.25rem 1.2rem 1.3rem;
+    display:flex; flex-direction:column; gap:.65rem; transition:border-color .2s, transform .2s; }
+  .card:hover{ border-color:var(--line2); }
+  .card .name{ font-family:var(--mono); font-size:1.18rem; font-weight:500; letter-spacing:-.01em; }
+  .card .name .b{ color:var(--bracket); }
+  .card .name .x{ color:var(--signal); }
+  .card .name .o{ color:var(--fg); }
+  .card .method{ font-size:.95rem; color:var(--fg); font-weight:600; }
+  .card .method .k{ font-family:var(--mono); font-size:.8rem; color:var(--muted); font-weight:400;
+    text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:.2rem; }
+  .card .desc{ font-size:.9rem; color:var(--muted); line-height:1.5; margin:0; }
+  .card .themes{ margin-top:auto; padding-top:.5rem; display:flex; flex-wrap:wrap; gap:.35rem;
+    font-family:var(--mono); font-size:.74rem; }
+  .card .themes span{ color:var(--muted); border:1px solid var(--line); border-radius:2px; padding:.15em .45em; }
+  .card .note{ font-family:var(--mono); font-size:.72rem; color:var(--signal); letter-spacing:.02em; }
+
+  /* ---- quickstart ---- */
+  .qs{ display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.3fr); gap:clamp(1rem,2.5vw,1.8rem); align-items:start; }
+  @media (max-width:780px){ .qs{ grid-template-columns:1fr; } }
+  .qs-list{ display:flex; flex-direction:column; gap:.4rem; }
+  .qs-list button{ text-align:left; font-family:var(--mono); font-size:.9rem; cursor:pointer;
+    background:transparent; color:var(--muted); border:1px solid var(--line); border-radius:2px;
+    padding:.6em .8em; letter-spacing:.02em; transition:all .18s; display:flex; justify-content:space-between; gap:.5rem; }
+  .qs-list button .arr{ opacity:0; color:var(--signal); }
+  .qs-list button:hover{ border-color:var(--line2); color:var(--fg); }
+  .qs-list button.active{ color:var(--signal-bright); border-color:var(--signal); background:var(--sel); }
+  .qs-list button.active .arr{ opacity:1; }
+  .qs-list button:focus-visible{ outline:1px solid var(--signal); outline-offset:2px; }
+  .term{ background:var(--panel); border:1px solid var(--line2); border-radius:5px; overflow:hidden;
+    font-family:var(--mono); font-size:clamp(.78rem,1.4vw,.9rem); }
+  .term .bar{ display:flex; align-items:center; gap:.4rem; padding:.6rem .9rem; border-bottom:1px solid var(--line);
+    background:var(--panel2); color:var(--muted); font-size:.74rem; letter-spacing:.03em; }
+  .term .bar .dot{ width:.6rem; height:.6rem; border-radius:50%; background:var(--line2); }
+  .term .bar .ttl{ margin-left:.4rem; }
+  .term .body{ padding:1rem 1.1rem 1.2rem; line-height:1.7; overflow-x:auto; }
+  .term .ln{ white-space:pre; }
+  .term .p{ color:var(--muted); }         /* prompt */
+  .term .cmd{ color:var(--fg); }
+  .term .ok{ color:var(--ok); }
+  .term .hl{ color:var(--signal-bright); }
+  .term .dim{ color:var(--muted); }
+
+  /* ---- use cases ---- */
+  .nodes{ display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:clamp(1rem,2.4vw,1.5rem); }
+  .node{ border:1px solid var(--line2); background:var(--panel); border-radius:5px; overflow:hidden;
+    font-family:var(--mono); font-size:.82rem; }
+  .node .fm{ padding:.8rem 1rem; border-bottom:1px solid var(--line); background:var(--panel2); color:var(--muted); line-height:1.55; }
+  .node .fm .key{ color:var(--signal); }
+  .node .nbody{ padding:1rem; line-height:1.6; display:flex; flex-direction:column; gap:.7rem; }
+  .node .nbody .t{ font-family:var(--sans); color:var(--fg); font-size:.95rem; line-height:1.5; }
+  .node .ev{ border-left:2px solid var(--signal); padding-left:.7rem; color:var(--muted); }
+  .node .ev q{ color:var(--fg); }
+  .node .link{ color:var(--signal-bright); }
+  .node .tag{ display:inline-block; color:var(--muted); }
+
+  footer.foot{ border-top:1px solid var(--line); padding:2.4rem 0 3rem; color:var(--muted);
+    font-family:var(--mono); font-size:.8rem; display:flex; flex-wrap:wrap; gap:.6rem 1.4rem; align-items:baseline; }
+  footer.foot .tick{ width:.5em; height:.5em; background:var(--signal); display:inline-block; }
+
+  @media (prefers-reduced-motion: reduce){
+    .wordmark .slot,.wordmark .word,.rail li,.card,.qs-list button{ transition:none; }
+    .nav{ backdrop-filter:none; }
+  }
+</style>
+
+<div class="page">
+  <canvas class="graph" aria-hidden="true"></canvas>
+
+  <nav class="nav">
+    <span class="brand"><span class="tick"></span>kb-kit</span>
+    <span class="links">
+      <a href="#why" data-opt>Why</a>
+      <a href="#masks">Masks</a>
+      <a href="#quickstart">Quickstart</a>
+      <a href="#usecases" data-opt>Use&nbsp;cases</a>
+    </span>
+  </nav>
+
+  <!-- HERO -->
+  <section id="home" class="wrap hero">
+    <p class="eyebrow">Knowledge base as code</p>
+    <h1 class="wordmark" aria-label="X-Ops — any discipline as a swappable mask">
+      <span class="brk" aria-hidden="true">[</span><span class="slot"><span class="word">project</span></span><span class="brk" aria-hidden="true">]</span><span class="ops" aria-hidden="true">Ops</span>
+    </h1>
+    <p class="caption">Pick the discipline. The engine doesn&rsquo;t move.</p>
+    <p class="thesis">The tracker is the contract.<br>The knowledge base is the context.</p>
+    <p class="lede">kb-kit turns that context into versioned markdown &mdash; a living graph of <b>decisions</b>, <b>evidence</b>, and <b>open questions</b> that sits beside your code and answers to whatever Ops you run. Swap the mask; the themes, filing rules, and checks follow. The engine underneath never changes.</p>
+    <ul class="rail" role="list" aria-label="masks"></ul>
+    <p class="constants">
+      <span class="lbl">Constant across every mask</span><span class="arrow">&rarr;</span>
+      <span class="items">kb-check &middot; graph &middot; /kb-add &middot; evidence-anchors</span>
+    </p>
+  </section>
+
+  <!-- WHY -->
+  <section id="why" class="band"><div class="wrap">
+    <div class="shead">
+      <p class="eyebrow">Why structure the context</p>
+      <h2>The model is a tool. The context is yours.</h2>
+      <p>The word &ldquo;intelligence&rdquo; set the wrong expectation. A language model doesn&rsquo;t understand your project &mdash; it predicts the continuation of what you feed it. Which is exactly why the leverage moved to the context, and why the context shouldn&rsquo;t live inside any one vendor.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar">
+        <span class="n">01 &middot; It continues, it doesn&rsquo;t comprehend</span>
+        <h3>Feed it structure, it extends structure</h3>
+        <p>An LLM continues patterns from its input. It has no taste, no stake, no memory of your decisions. Hand it vibes and it extends vibes; hand it a structured record and it reasons over a structured record.</p>
+      </div>
+      <div class="pillar">
+        <span class="n">02 &middot; Structure beats hope</span>
+        <h3>The edge was never the prompt</h3>
+        <p>Not the prompt, not the model tier. It&rsquo;s the quality of the context you can hand any model on demand &mdash; decisions with evidence, hypotheses with verdicts, open questions still marked open.</p>
+      </div>
+      <div class="pillar">
+        <span class="n">03 &middot; Model-agnostic by design</span>
+        <h3>No vendor lock, no chat amnesia</h3>
+        <p>A model is a model plus a datacenter, and switching cost is lower than the hype. Keep context in plaintext, versioned beside your code &mdash; portable across GPT, Claude, or a self-hosted open model tomorrow.</p>
+      </div>
+    </div>
+    <p class="why-punch">kb-kit is that context: <b>structured, owned, model-agnostic</b>. The mask keeps each discipline honest; the engine keeps every node linkable, checkable, and yours.</p>
+    <p class="src">Provoked by a thread on LLM-as-tool vs. LLM-as-intelligence, overheated expectations, and the shift toward self-hosting &amp; open-source models.</p>
+  </div></section>
+
+  <!-- MASKS -->
+  <section id="masks" class="band"><div class="wrap">
+    <div class="shead">
+      <p class="eyebrow">One X, one method</p>
+      <h2>Every discipline, anchored to a real practice</h2>
+      <p>A mask isn&rsquo;t a folder rename. Each one ships the themes, filing rules, and checks of an established method &mdash; so the discipline stays honest, not aspirational.</p>
+    </div>
+    <div class="grid" id="masksGrid"></div>
+  </div></section>
+
+  <!-- QUICKSTART -->
+  <section id="quickstart" class="band"><div class="wrap">
+    <div class="shead">
+      <p class="eyebrow">Quickstart</p>
+      <h2>Load a mask, get a working base in one command</h2>
+      <p>Pick the discipline on the left. The mask scaffolds its themes, encodes its method, and turns on the checks that keep it clean.</p>
+    </div>
+    <div class="qs">
+      <div class="qs-list" id="qsList" role="tablist" aria-label="pick a mask"></div>
+      <div class="term" aria-live="polite">
+        <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="ttl" id="termTitle">~/your-project</span></div>
+        <div class="body" id="termBody"></div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- USE CASES -->
+  <section id="usecases" class="band"><div class="wrap">
+    <div class="shead">
+      <p class="eyebrow">What a node looks like</p>
+      <h2>Not notes. Citable, linkable knowledge.</h2>
+      <p>Every fact is one file with frontmatter, evidence pinned to a verbatim quote, and links to the nodes it touches. This is what any model reads when it needs your context.</p>
+    </div>
+    <div class="nodes">
+      <div class="node">
+        <div class="fm">
+          <div><span class="key">name:</span> 018-weekly-release-train</div>
+          <div><span class="key">type:</span> decision &nbsp; <span class="key">status:</span> active</div>
+          <div><span class="key">mask:</span> [project]Ops</div>
+        </div>
+        <div class="nbody">
+          <div class="t">Releases ship on a weekly train, not on demand &mdash; one QA window, no Friday hotfix scramble.</div>
+          <div class="ev"><q>&hellip; if we ship every Wednesday, QA finally knows when to plan.</q><br><span class="dim">&mdash; planning call, 41:12</span></div>
+          <div><span class="tag">related &rarr;</span> <span class="link">[[019-code-freeze-tuesday]]</span> &middot; <span class="link">[[020-hotfix-policy]]</span></div>
+        </div>
+      </div>
+      <div class="node">
+        <div class="fm">
+          <div><span class="key">name:</span> checklist-vs-product-tour</div>
+          <div><span class="key">type:</span> hypothesis &nbsp; <span class="key">status:</span> pending</div>
+          <div><span class="key">mask:</span> [product]Ops</div>
+        </div>
+        <div class="nbody">
+          <div class="t">A five-item setup checklist beats a guided product tour &mdash; measured by day-7 activation.</div>
+          <div class="ev"><q>honestly, I skipped the tour &mdash; I just wanted to get to my own data.</q><br><span class="dim">&mdash; user interview, 27:40</span></div>
+          <div><span class="tag">check &rarr;</span> <span class="dim">50/50 split across new signups; time-boxed 2 weeks</span></div>
+        </div>
+      </div>
+    </div>
+  </div></section>
+
+  <footer class="foot wrap">
+    <span><span class="tick"></span> kb-kit</span>
+    <span class="dim">knowledge base as code</span>
+    <span class="dim">one engine &middot; any mask &middot; model-agnostic</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var MASKS=[
+    {x:"project", ops:"ProjectOps", method:"Decision log + RAID",
+     km:"Decisions &amp; risks", desc:"Every choice a dated decision with evidence; risks, assumptions, issues and dependencies tracked beside them.",
+     themes:["decisions","risks","sources"], slug:"projectops",
+     checks:["evidence-required","stale-decision-lint"], add:'kb add "Weekly release train" → decisions/'},
+    {x:"product", ops:"ProductOps", method:"Continuous Discovery",
+     km:"Opportunity–solution trees", desc:"Weekly customer touchpoints; opportunities mapped to outcomes; assumptions tested before anything is built.",
+     themes:["insights","opportunities","experiments"], slug:"productops",
+     checks:["mom-test-lint","opportunity-linked"], add:'kb add "Users abandon at step 3" → insights/'},
+    {x:"research", ops:"ResearchOps", method:"Atomic Research",
+     km:"Fact → insight → rec", desc:"Every study broken into linkable nuggets that get reused across projects instead of dying in a slide deck.",
+     themes:["studies","findings","participants"], slug:"researchops",
+     checks:["nugget-atomicity","source-cited"], add:'kb add finding "Onboarding too long" → findings/'},
+    {x:"design", ops:"DesignOps", method:"Tokens + critique log",
+     km:"Decisions, not re-litigation", desc:"Design decisions and heuristic critiques recorded once, with the reasoning, so they aren&rsquo;t re-argued each sprint.",
+     themes:["patterns","tokens","critiques"], slug:"designops",
+     checks:["token-referenced","critique-actioned"], add:'kb add critique "Modal traps focus" → critiques/'},
+    {x:"data", ops:"DataOps", method:"Contracts + postmortems",
+     km:"Schemas &amp; incidents", desc:"Data contracts and incident postmortems as first-class, linkable knowledge &mdash; not a Slack thread that scrolls away.",
+     themes:["contracts","pipelines","incidents"], slug:"dataops",
+     checks:["contract-versioned","incident-rca"], add:'kb add incident "Null spike in events" → incidents/'},
+    {x:"sales", ops:"SalesOps", method:"MEDDICC",
+     km:"Deal qualification", desc:"Metrics, economic buyer, decision criteria, pain, champion, competition &mdash; captured per account, not per memory.",
+     themes:["accounts","deals","objections"], slug:"salesops",
+     checks:["meddicc-complete","champion-named"], add:'kb add deal "Acme – renewal" → deals/'},
+    {x:"people", ops:"PeopleOps", method:"Competency matrices",
+     km:"Roles &amp; org decisions", desc:"Role expectations, growth frameworks, and org decisions kept as versioned knowledge instead of tribal lore.",
+     themes:["roles","frameworks","decisions"], slug:"peopleops",
+     checks:["role-leveled","decision-dated"], add:'kb add role "Senior BE – scope" → roles/'},
+    {x:"eng", ops:"EngOps", method:"ADR / RFC",
+     km:"Not DevOps — the decisions layer", desc:"Architecture Decision Records and RFCs: the &ldquo;why we built it this way&rdquo; that outlives the code and onboards the next engineer.",
+     themes:["adr","rfc","runbooks"], slug:"engops",
+     checks:["adr-numbered","supersedes-linked"], add:'kb add adr "Postgres over Mongo" → adr/'}
+  ];
+
+  /* ---------- hero cycle ---------- */
+  var rail=document.querySelector(".rail");
+  rail.innerHTML=MASKS.map(function(m){return "<li>"+m.x+"</li>";}).join("");
+  var railItems=Array.prototype.slice.call(rail.children);
+  var slot=document.querySelector(".slot"), word=document.querySelector(".word");
+  var RM=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function heroActive(i){ for(var k=0;k<railItems.length;k++) railItems[k].classList.toggle("active",k===i); }
+  function heroApply(i){ word.textContent=MASKS[i].x; slot.style.width=MASKS[i].x.length+"ch"; heroActive(i); }
+  heroApply(0);
+  if(!RM){
+    var hi=0;
+    setInterval(function(){
+      var n=(hi+1)%MASKS.length;
+      word.style.transform="translateY(-0.26em)"; word.style.opacity="0";
+      setTimeout(function(){
+        word.textContent=MASKS[n].x; slot.style.width=MASKS[n].x.length+"ch"; heroActive(n);
+        word.style.transition="none"; word.style.transform="translateY(0.26em)"; void word.offsetHeight;
+        word.style.transition=""; word.style.transform="translateY(0)"; word.style.opacity="1"; hi=n;
+      },300);
+    },2400);
+  }
+
+  /* ---------- masks grid ---------- */
+  document.getElementById("masksGrid").innerHTML=MASKS.map(function(m){
+    return '<div class="card">'
+      +'<div class="name"><span class="b">[</span><span class="x">'+m.x+'</span><span class="b">]</span><span class="o">Ops</span></div>'
+      +'<div class="method"><span class="k">'+m.km+'</span>'+m.method+'</div>'
+      +'<p class="desc">'+m.desc+'</p>'
+      +(m.x==="eng"?'<div class="note">&ne; DevOps (CI/CD). This is the knowledge layer.</div>':'')
+      +'<div class="themes">'+m.themes.map(function(t){return "<span>"+t+"/</span>";}).join("")+'</div>'
+      +'</div>';
+  }).join("");
+
+  /* ---------- quickstart loader ---------- */
+  var qsList=document.getElementById("qsList"), termBody=document.getElementById("termBody"), termTitle=document.getElementById("termTitle");
+  qsList.innerHTML=MASKS.map(function(m,i){
+    return '<button role="tab" data-i="'+i+'" aria-selected="'+(i===0)+'">[ '+m.x+' ]Ops<span class="arr">&rarr;</span></button>';
+  }).join("");
+  var qsBtns=Array.prototype.slice.call(qsList.children);
+  function ln(cls,txt){ return '<div class="ln '+(cls||"")+'">'+txt+'</div>'; }
+  function renderTerm(m){
+    termTitle.textContent="~/your-project";
+    termBody.innerHTML=
+      ln("", '<span class="p">$</span> <span class="cmd">kb-init --mask '+m.slug+'</span>')
+     +ln("ok", '✓ scaffolded themes:   '+m.themes.map(function(t){return t+"/";}).join("  "))
+     +ln("", '<span class="ok">✓</span> method encoded:      <span class="hl">'+m.method+'</span>')
+     +ln("", '<span class="ok">✓</span> checks enabled:      <span class="dim">'+m.checks.join(", ")+'</span>')
+     +ln("dim", '')
+     +ln("", '<span class="p">$</span> <span class="cmd">'+m.add+'</span>')
+     +ln("dim", '  filed · indexed · anchored · committed beside your code');
+  }
+  function selectQs(i){
+    for(var k=0;k<qsBtns.length;k++){ var a=(k===i); qsBtns[k].classList.toggle("active",a); qsBtns[k].setAttribute("aria-selected",a); }
+    renderTerm(MASKS[i]);
+  }
+  qsBtns.forEach(function(b){ b.addEventListener("click",function(){ selectQs(+b.getAttribute("data-i")); }); });
+  selectQs(0);
+
+  /* ---------- ambient graph ---------- */
+  var canvas=document.querySelector(".graph"), nodes=[], edges=[];
+  function build(){
+    var w=window.innerWidth,h=window.innerHeight,gx=Math.max(130,w/9),gy=Math.max(130,h/6);
+    nodes=[];
+    for(var y=gy*0.4;y<h;y+=gy){ for(var x=gx*0.4;x<w;x+=gx){ nodes.push({x:x+(Math.random()-0.5)*gx*0.55,y:y+(Math.random()-0.5)*gy*0.55}); } }
+    edges=[];
+    for(var a=0;a<nodes.length;a++){ for(var b=a+1;b<nodes.length;b++){ var dx=nodes[a].x-nodes[b].x,dy=nodes[a].y-nodes[b].y;
+      if(Math.sqrt(dx*dx+dy*dy)<gx*0.95 && Math.random()<0.42) edges.push([a,b]); } }
+  }
+  function paint(){
+    if(!canvas.getContext) return;
+    var dpr=Math.min(window.devicePixelRatio||1,2),w=window.innerWidth,h=window.innerHeight;
+    canvas.width=w*dpr; canvas.height=h*dpr; canvas.style.width=w+"px"; canvas.style.height=h+"px";
+    var ctx=canvas.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h);
+    var cs=getComputedStyle(document.documentElement);
+    ctx.strokeStyle=cs.getPropertyValue("--graph-edge").trim()||"rgba(128,128,128,.08)"; ctx.lineWidth=1;
+    for(var e=0;e<edges.length;e++){ var p=nodes[edges[e][0]],q=nodes[edges[e][1]]; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke(); }
+    ctx.fillStyle=cs.getPropertyValue("--graph-dot").trim()||"rgba(128,128,128,.16)";
+    for(var n=0;n<nodes.length;n++){ ctx.beginPath(); ctx.arc(nodes[n].x,nodes[n].y,1.8,0,Math.PI*2); ctx.fill(); }
+  }
+  function rebuild(){ build(); paint(); }
+  rebuild();
+  var rt; window.addEventListener("resize",function(){ clearTimeout(rt); rt=setTimeout(rebuild,180); });
+  var mq=window.matchMedia("(prefers-color-scheme: dark)"); (mq.addEventListener?mq.addEventListener("change",paint):mq.addListener(paint));
+  new MutationObserver(paint).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme","class","style"]});
+})();
+</script>

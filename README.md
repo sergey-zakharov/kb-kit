@@ -61,6 +61,10 @@ kit-mask with one command and the same graph becomes a different tool; masks
 coexist on one base and interlink: your product insights cite the same
 interview sources your CRM cites.
 
+The X is open-ended: **[ product ]Ops** today; [ project ]Ops, [ research ]Ops,
+[ sales ]Ops next — one engine under every Ops. Your tracker holds the
+*contract*; your base holds the *formalized context*.
+
 ## How it works
 
 ```mermaid
@@ -134,9 +138,22 @@ as one unit. Built-in today:
 - **`sources`** — the source library: one file per material, quotes with
   timecodes and block anchors, ready to be cited by everything else.
 
-Masks are how the project scales sideways: sales CRM, content pipeline,
-fundraising — same engine, different discipline. Writing one is writing
-markdown.
+Masks are how the project scales sideways — the **[ X ]Ops map**, each future
+mask anchored to one proven method (not a bag of themes):
+
+| X | Anchor method the mask encodes |
+|---|---|
+| `product` | Continuous Discovery + Mom-Test evidence — **shipped** |
+| `project` | Decision log + RAID (risks / assumptions / issues / deps) |
+| `research` | Atomic Research (nuggets: fact → insight → recommendation) |
+| `eng` | ADR / RFC — the knowledge layer (≠ DevOps CI/CD) |
+| `data` | Data contracts + incident postmortems |
+| `sales` | MEDDICC deal knowledge |
+| `design` | Tokens + critique/heuristic log |
+| `people` | Competency matrices + org decisions |
+
+Writing a mask is writing markdown. The animated version of this pitch lives
+in [`site/`](site/index.html) — the [X]Ops landing.
 
 ## Automation (optional)
 
@@ -148,6 +165,18 @@ Git pre-commit hygiene (warn-only by default), a base-status line opening every
 Claude Code session, per-edit hygiene feedback straight to the agent, and a
 CI template staged for when you want it. Filing stays curated — automation
 watches hygiene, it never captures content.
+
+## Why plain files, why now
+
+1. **A model continues; it doesn't understand.** Feed it structure and it
+   continues structure; feed it vibes and it continues vibes. kb-kit is the
+   structure.
+2. **Structure beats hope.** The lever isn't a bigger prompt or a newer model
+   tier — it's the quality of the context you can hand any model, on demand,
+   with citations.
+3. **Model-agnostic by design.** Vendor chat memory is lock-in with amnesia.
+   Plaintext next to your code moves between Claude, GPT, and tomorrow's
+   self-hosted model at zero switching cost.
 
 ## Principles
 
@@ -170,8 +199,8 @@ grep-verified. ~140 test assertions across four zero-dependency suites.
 
 ## Roadmap
 
-- More kit-masks: sales CRM, content pipeline, `product-management-pro`
-  (metrics/OKR for running products)
+- The [ X ]Ops mask map above, one anchor method at a time; plus
+  `product-management-pro` (metrics/OKR for running products)
 - Codex adapter (`AGENTS.md`) — the core is already agent-neutral
 - Mask registry · optional embeddings cache when a base outgrows grep
 

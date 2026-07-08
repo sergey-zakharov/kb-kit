@@ -22,10 +22,9 @@ or alongside feature 002.
 
 ## Also queued
 
-- **Feature 002: product-development mask** — IN PROGRESS (spec approved 2026-07-06).
+- ~~Feature 002: product-development mask~~ — SHIPPED v0.2.0; open remainder: T209 live validation on a real corpus.
+- **[X]Ops mask map** (positioning decided 2026-07-08): each X = a mask anchored to ONE proven method — project=Decision log+RAID, research=Atomic Research, eng=ADR/RFC (≠DevOps), data=Data contracts+postmortems, sales=MEDDICC, design=Tokens+critique log, people=Competency matrices. Landing with animated [X]Ops hero rescued to `site/index.html` (Why-pillars: "continues, not understands" / "structure beats hope" / "model-agnostic by design"). Killer positioning line: **tracker = contract, kb = formalized context** (accepted by a peer in a real team discussion).
 - **product-management-pro mask** (future): running products — metric trees, OKR, feedback loops; will need «смычки» (couplings to analytics/data sources) — deferred until the integration design is clear.
-  journey, PM best practices for new and existing products) — decided, next
-  spec after v0.1 launch.
 - ~~Memory bridge~~ — SHIPPED in v0.1.0 полностью: EXTERNAL_BASE_* resolution, explicit [[name:slug]], external-base-unreachable soft finding, read-only follow in kb-ask, viz exclusion.
 - ~~fileref #anchor strip~~ — SHIPPED in v0.1.0.
 - ~~Inline code spans~~ — SHIPPED in v0.1.0 (excluded from link/fileref parsing).

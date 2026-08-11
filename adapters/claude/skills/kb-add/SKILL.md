@@ -1,6 +1,6 @@
 ---
 name: kb-add
-description: File raw material into the knowledge base — classify it, write or update node(s), update the index in the same operation, set links. Use when the user provides a fact, note, link, transcript, or screenshot text to store; asks to process the INBOX; or wants facts extracted from the current conversation ("--from-session").
+description: File raw material into the knowledge base — classify it, write or update node(s), update the index in the same operation, set links. Use when the user provides a fact, note, link, transcript, or screenshot text to store; asks to process the INBOX; or wants facts extracted from the current conversation ("--from-session"). When a durable fact, decision, or client quote emerges mid-session, PROACTIVELY OFFER to file it — but never file without the user's go (curated, not captured).
 ---
 
 # /kb-add — curated filing into the knowledge base

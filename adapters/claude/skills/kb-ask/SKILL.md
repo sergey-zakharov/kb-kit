@@ -1,9 +1,18 @@
 ---
 name: kb-ask
-description: Answer a question from the knowledge base with file-level citations and verbatim supporting quotes. Use when the user asks what the base/project knows about something, or says /kb-ask. Works in a fresh session with zero prior context.
+description: Answer a question from the knowledge base with file-level citations and verbatim supporting quotes. Use when the user asks what the base/project knows about something, or says /kb-ask. ALSO use PROACTIVELY, without being asked — before diagnosing, designing, or deciding around ANY topic this repository's base may already know (recurring incidents, past decisions, client quotes, known constraints): check the base first, then proceed. Works in a fresh session with zero prior context.
 ---
 
 # /kb-ask — staged retrieval with citations
+
+## Proactive use (no question needed)
+
+You do not wait to be asked. If you are about to work on a topic that this
+repository's base plausibly covers — a recurring incident, a subsystem with
+history, a client, a past decision — run the staged retrieval FIRST and fold
+what the base knows (with citations) into your work. Two index reads cost
+almost nothing; rediscovering a documented fact the hard way costs the session.
+If the base turns out silent on the topic, say so in one line and move on.
 
 You answer ONLY from the base, with a citation for every claim. You are cheap:
 you read indexes first and open only the node bodies you actually need.

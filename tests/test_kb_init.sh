@@ -101,6 +101,15 @@ grep -q "echo custom" "$TMP/.git/hooks/pre-commit" && ok "existing pre-commit no
 # hook behavior: clean base → pre-commit passes
 ( cd "$TMP" && git add -A >/dev/null 2>&1; bash .kb/hooks/pre-commit.kb.sh ) && ok "pre-commit exits 0 on clean base" || fail "pre-commit failed on clean base"
 
+# 6b2. CLAUDE.md discoverability section (marker-scoped, idempotent, non-clobber)
+grep -q "KB-KIT START" "$TMP/CLAUDE.md" && grep -q "kb/" "$TMP/CLAUDE.md" && ok "CLAUDE.md section injected on scaffold" || fail "CLAUDE.md section missing"
+echo "user private note" >> "$TMP/CLAUDE.md"
+( cd "$TMP" && "$ROOT/kb-init.sh" --update >/dev/null )
+grep -q "user private note" "$TMP/CLAUDE.md" && ok "user CLAUDE.md content survives update" || fail "user content lost"
+N=$(grep -c "KB-KIT START" "$TMP/CLAUDE.md")
+[ "$N" -eq 1 ] && ok "section not duplicated on re-run" || fail "section duplicated ($N)"
+grep -q "KB-KIT START" "$TMP2/CLAUDE.md" && grep -q "docs/" "$TMP2/CLAUDE.md" && ok "migrate injects section with corpus KB_DIR" || fail "migrate section missing"
+
 # 6c. --user-skills installs to $HOME/.claude/skills (HOME overridden for the test)
 FAKEHOME="$ROOT/tests/tmp/fakehome"
 rm -rf "$FAKEHOME"; mkdir -p "$FAKEHOME"

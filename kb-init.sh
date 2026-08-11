@@ -50,6 +50,27 @@ copy_toolkit() {
   chmod +x "$TARGET"/.kb/scripts/*.sh 2>/dev/null || true
 }
 
+write_claude_section() {
+  # inject/update a marked kb-kit block in the project's CLAUDE.md so any fresh
+  # agent learns the base exists. Marker-scoped: user content is never touched.
+  local f="$TARGET/CLAUDE.md" tpl="$SRC_DIR/adapters/claude/claude-section.md.tmpl" resolved
+  [ -f "$tpl" ] || return 0
+  resolved="$(mktemp)"
+  sed "s|{{KB_DIR}}|$1|g" "$tpl" > "$resolved"
+  if [ -f "$f" ] && grep -q "KB-KIT START" "$f"; then
+    awk -v bf="$resolved" '
+      /<!-- KB-KIT START -->/ { while ((getline l < bf) > 0) print l; skip = 1; next }
+      /<!-- KB-KIT END -->/   { skip = 0; next }
+      !skip { print }
+    ' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+    say "kb-init: CLAUDE.md kb-kit section refreshed"
+  else
+    { if [ -f "$f" ]; then cat "$f"; printf '\n'; fi; cat "$resolved"; } > "$f.tmp" && mv "$f.tmp" "$f"
+    say "kb-init: CLAUDE.md kb-kit section added (marker-scoped; your content untouched)"
+  fi
+  rm -f "$resolved"
+}
+
 write_config() {
   # preserve user-added lines (EXTERNAL_BASE_*, etc.) across updates
   local extra=""
@@ -74,6 +95,7 @@ scaffold)
   else
     say "kb-init: base already exists at $KB_DIR/ — knowledge untouched, toolkit refreshed"
   fi
+  write_claude_section "$KB_DIR"
   if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"scaffold","kb_dir":"%s"}\n' "$KB_DIR"; fi
   ;;
 
@@ -82,6 +104,7 @@ update)
   KB_DIR="$(awk -F= '$1=="KB_DIR"{print $2}' "$TARGET/.kb/config")"
   copy_toolkit
   write_config "$KB_DIR"
+  write_claude_section "$KB_DIR"
   say "kb-init: toolkit refreshed (.kb/, .claude/skills/); knowledge content untouched"
   if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"update","kb_dir":"%s"}\n' "$KB_DIR"; fi
   ;;
@@ -131,6 +154,7 @@ migrate)
     dated=$(find "$TARGET/$CORPUS" -type f -name '20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' | wc -l)
     echo "- $dated files start with a YYYY-MM-DD prefix."
   } > "$RPT"
+  write_claude_section "$CORPUS"
   say "kb-init: toolkit installed; inventory written to $CORPUS/MIGRATION_REPORT.md (report only, no content changes)"
   if [ "$JSON" = 1 ]; then printf '{"status":"ok","mode":"migrate","kb_dir":"%s","report":"%s/MIGRATION_REPORT.md"}\n' "$CORPUS" "$CORPUS"; fi
   ;;

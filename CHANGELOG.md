@@ -2,6 +2,16 @@
 
 All notable changes to kb-kit. Public from the first commit — that's the point.
 
+## v0.2.2 — 2026-07-08
+
+- **Discoverability fix** (field report from a live session): /kb-ask now
+  triggers PROACTIVELY — "before diagnosing any topic the base may know, check
+  the base first", not only on explicit questions; /kb-add proactively OFFERS
+  to file emerging facts (still never files without a go — curated, not
+  captured). kb-init now injects a marker-scoped kb-kit section into the
+  project CLAUDE.md (scaffold/migrate/update; idempotent; user content
+  untouched) — fresh agents learn the base exists.
+
 ## v0.2.1 — 2026-07-07
 
 - **`kb-init --user-skills`** — kb-* commands at user level (~/.claude/skills):

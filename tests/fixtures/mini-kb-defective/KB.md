@@ -9,3 +9,4 @@
 ## Conventions
 
 - Slugs/frontmatter EN. One node = one fact.
+- Fictional data: an invented bike-repair shop; every name and quote is made up.

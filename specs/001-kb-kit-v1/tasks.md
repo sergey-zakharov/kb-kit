@@ -85,7 +85,7 @@
 - [X] T032 [P] Verify quickstart.md end-to-end on a clean tmp repo (SC-004: nothing running, git+agent only); fix README install section to real paths and sweep README for overclaiming (verb tense honest vs shipped state)
 - [X] T033 [P] Bootstrap public changelog `CHANGELOG.md` (v0.1 notes) per distribution-first strategy
 - [X] T034 [P] Add `LICENSE` (MIT) + attribution note in README credits (launch blocker for OSS distribution)
-- [ ] T035 Pre-launch privacy sweep (launch blocker): no real person/company names, no private corpus paths or business specifics anywhere in the repo — validation records metrics-only, corpora copies stay in gitignored tests/tmp/, spec artifacts reviewed before the repo goes public
+- [X] T035 Pre-launch privacy sweep (launch blocker): no real person/company names, no private corpus paths or business specifics anywhere in the repo — validation records metrics-only, corpora copies stay in gitignored tests/tmp/, spec artifacts reviewed before the repo goes public
 
 ## Dependencies & execution order
 

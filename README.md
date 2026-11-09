@@ -49,6 +49,9 @@ graph — and the graph keeps them honest.**
 
 **A knowledge base your AI agent can actually maintain. Just markdown, just git.**
 
+kb-kit is an implementation of the [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
+pattern (Karpathy, April 2026) for Claude Code and git, with filing discipline on top.
+
 kb-kit turns a folder of markdown files into a disciplined knowledge graph that
 Claude Code (and other coding agents) can grow, query, and keep tidy — no
 server, no database, no background processes, no embeddings. If you have git
@@ -206,6 +209,7 @@ grep-verified. ~140 test assertions across four zero-dependency suites.
 
 ## Credits
 
+The pattern is Andrej Karpathy's [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
 Distribution model borrowed from GitHub's
 [spec-kit](https://github.com/github/spec-kit).
 
